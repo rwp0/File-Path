@@ -6,14 +6,15 @@ use FilePathTest;
 use File::Path qw(rmtree mkpath make_path remove_tree);
 use File::Spec::Functions;
 
+
+my $prereq = prereq();
+plan skip_all  => $prereq if defined $prereq;
+plan tests     => 8;
+
 my $pwent = max_u();
 my $grent = max_g();
 my ( $max_uid, $max_user ) = @{ $pwent };
 my ( $max_gid, $max_group ) = @{ $grent };
-
-my $prereq = prereq($max_uid, $max_gid);
-plan skip_all  => $prereq if defined $prereq;
-plan tests     => 8;
 
 my $tmp_base = catdir(
     curdir(),
@@ -106,11 +107,16 @@ sub max_g {
 }
 
 sub prereq {
-  my ( $max_uid, $max_gid ) = @_;
   return "getpwent() not implemented on $^O" unless $Config{d_getpwent};
   return "getgrent() not implemented on $^O" unless $Config{d_getgrent};
   return "not running as root" unless $< == 0;
   return "darwin's nobody and nogroup are -1 or -2" if $^O eq 'darwin';
+
+  my $pwent = max_u();
+  my $grent = max_g();
+  my ( $max_uid, $max_user ) = @{ $pwent };
+  my ( $max_gid, $max_group ) = @{ $grent };
+
   return "getpwent() appears to be insane" unless $max_uid > 0;
   return "getgrent() appears to be insane" unless $max_gid > 0;
   return undef;
