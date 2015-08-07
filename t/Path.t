@@ -349,8 +349,8 @@ $dir2 = catdir("a\nb", 'd2');
 SKIP: {
   # Better to search for *nix derivatives?
   # Not sure what else doesn't support newline in paths
-  skip "This is a MSWin32 platform", 2
-    if $^O eq 'MSWin32';
+  skip "$^O doesn't allow newline in paths", 2
+    if $^O =~ m/^(MSWin32|VMS)$/;
 
   @created = make_path( $dir, $dir2 );
 
@@ -468,6 +468,9 @@ SKIP : {
 
     foreach (@inputs) {
         $input = $_;
+        # We can skip from here because 0 is last in the list.
+        skip "Mode of 0 means assume user defaults on VMS", 1
+          if ($input == 0 && $Is_VMS);
         @created = mkpath($dir, {chmod => $input});
         $mode = (stat($dir))[2];
         $octal_mode = S_IMODE($mode);
