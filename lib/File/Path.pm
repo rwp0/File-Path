@@ -1145,6 +1145,8 @@ Contributors to File::Path, in alphabetical order.
 
 =item <F<bulkdd@cpan.org>>
 
+=item Craig A. Berry <F<craigberry@mac.com>>
+
 =item Richard Elberger <F<riche@cpan.org>>
 
 =item Ryan Yee <F<ryee@cpan.org>>
