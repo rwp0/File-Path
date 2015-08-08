@@ -480,17 +480,18 @@ SKIP : {
     }
 }
 
-my ( $base, $dir_a, $dir_a_res, $dir_b, $dir_b_res );
+my ( $dir_base, $dir_base_res, $dir_a, $dir_a_res, $dir_b, $dir_b_res );
 
-$base = catdir($tmp_base,'output');
-$dir_a_res = $dir_a = catdir($base, 'A');
-$dir_b_res = $dir_b = catdir($base, 'B');
+$dir_base_res = $dir_base = catdir($tmp_base,'output');
+$dir_a_res    = $dir_a    = catdir($dir_base, 'A');
+$dir_b_res    = $dir_b    = catdir($dir_base, 'B');
 
+$dir_base_res = VMS::Filespec::vmsify($dir_base_res) if $Is_VMS;
 $dir_a_res = VMS::Filespec::vmsify($dir_a_res) if $Is_VMS;
 $dir_b_res = VMS::Filespec::vmsify($dir_b_res) if $Is_VMS;
 
 is(_run_for_verbose(sub {@created = mkpath($dir_a, 1)}),
-    "mkdir $base\nmkdir $dir_a_res\n",
+    "mkdir $dir_base_res\nmkdir $dir_a_res\n",
     'mkpath verbose (old style 1)'
 );
 
@@ -550,7 +551,7 @@ SKIP: {
 
     is(_run_for_verbose(sub {$count = rmtree( $dir_a, $dir_b,
                                               {verbose => 1, safe => 1})}),
-        "rmdir $dir_a\nunlink $file\nrmdir $dir_b_res\n",
+        "rmdir $dir_a_res\nunlink $file\nrmdir $dir_b_res\n",
         'rmtree safe verbose (new style)'
     );
 }
