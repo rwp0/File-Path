@@ -480,76 +480,85 @@ SKIP : {
     }
 }
 
-my $base = catdir($tmp_base,'output');
-$dir  = catdir($base,'A');
-$dir2 = catdir($base,'B');
+my ( $base, $dir_a, $dir_a_res, $dir_b, $dir_b_res );
 
-is(_run_for_verbose(sub {@created = mkpath($dir, 1)}),
-    "mkdir $base\nmkdir $dir\n",
+$base = catdir($tmp_base,'output');
+$dir_a_res = $dir_a = catdir($base, 'A');
+$dir_b_res = $dir_b = catdir($base, 'B');
+
+$dir_a_res = VMS::Filespec::vmsify($dir_a_res) if $Is_VMS;
+$dir_b_res = VMS::Filespec::vmsify($dir_b_res) if $Is_VMS;
+
+is(_run_for_verbose(sub {@created = mkpath($dir_a, 1)}),
+    "mkdir $base\nmkdir $dir_a_res\n",
     'mkpath verbose (old style 1)'
 );
 
-is(_run_for_verbose(sub {@created = mkpath([$dir2], 1)}),
-    "mkdir $dir2\n",
+is(_run_for_verbose(sub {@created = mkpath([$dir_b], 1)}),
+    "mkdir $dir_b_res\n",
     'mkpath verbose (old style 2)'
 );
 
-is(_run_for_verbose(sub {$count = rmtree([$dir, $dir2], 1, 1)}),
-    "rmdir $dir\nrmdir $dir2\n",
+is(_run_for_verbose(sub {$count = rmtree([$dir_a, $dir_b], 1, 1)}),
+    "rmdir $dir_a\nrmdir $dir_b\n",
     'rmtree verbose (old style)'
 );
 
-is(_run_for_verbose(sub {@created = mkpath($dir, {verbose => 1, mask => 0750})}),
-    "mkdir $dir\n",
+is(_run_for_verbose(sub {@created = mkpath( $dir_a,
+                                            {verbose => 1, mask => 0750})}),
+    "mkdir $dir_a_res\n",
     'mkpath verbose (new style 1)'
 );
 
-is(_run_for_verbose(sub {@created = mkpath($dir2, 1, 0771)}),
-    "mkdir $dir2\n",
+is(_run_for_verbose(sub {@created = mkpath($dir_b, 1, 0771)}),
+    "mkdir $dir_b_res\n",
     'mkpath verbose (new style 2)'
 );
 
-is(_run_for_verbose(sub {$count = rmtree([$dir, $dir2], 1, 1)}),
-    "rmdir $dir\nrmdir $dir2\n",
+is(_run_for_verbose(sub {$count = rmtree([$dir_a, $dir_b], 1, 1)}),
+    "rmdir $dir_a_res\nrmdir $dir_b_res\n",
     'again: rmtree verbose (old style)'
 );
 
-is(_run_for_verbose(sub {@created = make_path( $dir, $dir2, {verbose => 1, mode => 0711});}),
-    "mkdir $dir\nmkdir $dir2\n",
+is(_run_for_verbose(sub {@created = make_path( $dir_a, $dir_b,
+                                               {verbose => 1, mode => 0711});}),
+    "mkdir $dir_a_res\nmkdir $dir_b_res\n",
     'make_path verbose with final hashref'
 );
 
-is(_run_for_verbose(sub {@created = remove_tree( $dir, $dir2, {verbose => 1});}),
-    "rmdir $dir\nrmdir $dir2\n",
+is(_run_for_verbose(sub {@created = remove_tree( $dir_a, $dir_b,
+                                                 {verbose => 1});}),
+    "rmdir $dir_a_res\nrmdir $dir_b_res\n",
     'remove_tree verbose with final hashref'
 );
 
 # Have to re-create these 2 directories so that next block is not skipped.
 @created = make_path(
-    $dir,
-    $dir2,
+    $dir_a,
+    $dir_b,
     { mode => 0711 }
 );
 is(@created, 2, "2 directories created");
 
 SKIP: {
-    $file = catdir($dir2, "file");
+    $file = catdir($dir_b, "file");
     skip "Cannot create $file", 2 unless open OUT, "> $file";
     print OUT "test file, safe to delete\n", scalar(localtime), "\n";
     close OUT;
 
     ok(-e $file, "file created in directory");
 
-    is(_run_for_verbose(sub {$count = rmtree($dir, $dir2, {verbose => 1, safe => 1})}),
-        "rmdir $dir\nunlink $file\nrmdir $dir2\n",
+    is(_run_for_verbose(sub {$count = rmtree( $dir_a, $dir_b,
+                                              {verbose => 1, safe => 1})}),
+        "rmdir $dir_a\nunlink $file\nrmdir $dir_b_res\n",
         'rmtree safe verbose (new style)'
     );
 }
 
 {
-    my $base = catdir($tmp_base,'output2');
-    my $dir  = catdir($base,'A');
-    my $dir2 = catdir($base,'B');
+    my $base = catdir( $tmp_base, 'output2');
+    my $dir  = catdir( $base, 'A');
+    my $dir2 = catdir( $base, 'B');
 
     {
         my $warn;
@@ -586,16 +595,16 @@ SKIP: {
     my $nr_tests = 6;
     my $cwd = getcwd() or skip "failed to getcwd: $!", $nr_tests;
     rmtree($tmp_base, {result => \$list} );
-    is(ref($list), 'ARRAY', "received a final list of results");          # 1
-    ok( !(-d $tmp_base), "test base directory gone" );                    # 2
+    is(ref($list), 'ARRAY', "received a final list of results");
+    ok( !(-d $tmp_base), "test base directory gone" );
 
     my $p = getcwd();
     my $x = "x$$";
     my $xx = $x . "x";
 
     # setup
-    ok(mkpath($xx), "make $xx");                                         # 3
-    ok(chdir($xx), "... and chdir $xx");                                 # 4
+    ok(mkpath($xx), "make $xx");
+    ok(chdir($xx), "... and chdir $xx");
     END {
 #         ok(chdir($p), "... now chdir $p");
 #         ok(rmtree($xx), "... and finally rmtree $xx");
@@ -605,8 +614,8 @@ SKIP: {
 
     # create and delete directory
     my $px = catdir($p, $x);
-    ok(mkpath($px), 'create and delete directory 2.07');                # 5
-    ok(rmtree($px), '.. rmtree fails in File-Path-2.07');               # 6
+    ok(mkpath($px), 'create and delete directory 2.07');
+    ok(rmtree($px), '.. rmtree fails in File-Path-2.07');
 }
 
 my $windows_dir = 'C:\Path\To\Dir';
