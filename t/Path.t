@@ -226,10 +226,11 @@ $count = rmtree($dir, 0);
 
 is($count, 1, "removed directory unsafe mode");
 
-$count = rmtree($dir2, 0, 1);
-my $removed = $Is_VMS ? 0 : 1;
+my $expected_count = _cannot_delete_safe_mode($dir2) ? 0 : 1;
 
-is($count, $removed, "removed directory safe mode");
+$count = rmtree($dir2, 0, 1);
+
+is($count, $expected_count, "removed directory safe mode");
 
 # mkdir foo ./E/../Y
 # Y should exist
@@ -480,58 +481,76 @@ SKIP : {
     }
 }
 
-my ( $dir_base, $dir_base_res, $dir_a, $dir_a_res, $dir_b, $dir_b_res );
-
-$dir_base_res = $dir_base = catdir($tmp_base,'output');
-$dir_a_res    = $dir_a    = catdir($dir_base, 'A');
-$dir_b_res    = $dir_b    = catdir($dir_base, 'B');
-
-$dir_base_res = VMS::Filespec::unixify($dir_base_res) if $Is_VMS;
-$dir_a_res    = VMS::Filespec::unixify($dir_a_res)    if $Is_VMS;
-$dir_b_res    = VMS::Filespec::unixify($dir_b_res)    if $Is_VMS;
+my $dir_base = catdir($tmp_base,'output');
+my $dir_a    = catdir($dir_base, 'A');
+my $dir_b    = catdir($dir_base, 'B');
 
 is(_run_for_verbose(sub {@created = mkpath($dir_a, 1)}),
-    "mkdir $dir_base_res\nmkdir $dir_a_res\n",
+    _verbose_expected('mkpath', $dir_base, 0, 1)
+    . _verbose_expected('mkpath', $dir_a, 0),
     'mkpath verbose (old style 1)'
 );
 
 is(_run_for_verbose(sub {@created = mkpath([$dir_b], 1)}),
-    "mkdir $dir_b_res\n",
+    _verbose_expected('mkpath', $dir_b, 0),
     'mkpath verbose (old style 2)'
 );
 
+my $verbose_expected;
+
+# Must determine expectations while directories still exist.
+$verbose_expected = _verbose_expected('rmtree', $dir_a, 1)
+                  . _verbose_expected('rmtree', $dir_b, 1);
+
 is(_run_for_verbose(sub {$count = rmtree([$dir_a, $dir_b], 1, 1)}),
-    "rmdir $dir_a\nrmdir $dir_b\n",
+    $verbose_expected,
     'rmtree verbose (old style)'
 );
 
+# In case we didn't delete them in safe mode.
+rmtree($dir_a) if -d $dir_a;
+rmtree($dir_b) if -d $dir_b;
+
 is(_run_for_verbose(sub {@created = mkpath( $dir_a,
                                             {verbose => 1, mask => 0750})}),
-    "mkdir $dir_a_res\n",
+    _verbose_expected('mkpath', $dir_a, 0),
     'mkpath verbose (new style 1)'
 );
 
 is(_run_for_verbose(sub {@created = mkpath($dir_b, 1, 0771)}),
-    "mkdir $dir_b_res\n",
+    _verbose_expected('mkpath', $dir_b, 0),
     'mkpath verbose (new style 2)'
 );
 
+$verbose_expected = _verbose_expected('rmtree', $dir_a, 1)
+                  . _verbose_expected('rmtree', $dir_b, 1);
+
 is(_run_for_verbose(sub {$count = rmtree([$dir_a, $dir_b], 1, 1)}),
-    "rmdir $dir_a_res\nrmdir $dir_b_res\n",
+    $verbose_expected,
     'again: rmtree verbose (old style)'
 );
 
+rmtree($dir_a) if -d $dir_a;
+rmtree($dir_b) if -d $dir_b;
+
 is(_run_for_verbose(sub {@created = make_path( $dir_a, $dir_b,
                                                {verbose => 1, mode => 0711});}),
-    "mkdir $dir_a_res\nmkdir $dir_b_res\n",
+      _verbose_expected('make_path', $dir_a, 1)
+    . _verbose_expected('make_path', $dir_b, 1),
     'make_path verbose with final hashref'
 );
 
+$verbose_expected = _verbose_expected('remove_tree', $dir_a, 0)
+                  . _verbose_expected('remove_tree', $dir_b, 0);
+
 is(_run_for_verbose(sub {@created = remove_tree( $dir_a, $dir_b,
                                                  {verbose => 1});}),
-    "rmdir $dir_a_res\nrmdir $dir_b_res\n",
+    $verbose_expected,
     'remove_tree verbose with final hashref'
 );
+
+rmtree($dir_a) if -d $dir_a;
+rmtree($dir_b) if -d $dir_b;
 
 # Have to re-create these 2 directories so that next block is not skipped.
 @created = make_path(
@@ -542,18 +561,24 @@ is(_run_for_verbose(sub {@created = remove_tree( $dir_a, $dir_b,
 is(@created, 2, "2 directories created");
 
 SKIP: {
-    $file = catdir($dir_b, "file");
+    $file = catfile($dir_b, "file");
     skip "Cannot create $file", 2 unless open OUT, "> $file";
     print OUT "test file, safe to delete\n", scalar(localtime), "\n";
     close OUT;
+
+    $verbose_expected = _verbose_expected('rmtree', $dir_a, 1)
+                      . _verbose_expected('unlink', $file, 0)
+                      . _verbose_expected('rmtree', $dir_b, 1);
 
     ok(-e $file, "file created in directory");
 
     is(_run_for_verbose(sub {$count = rmtree( $dir_a, $dir_b,
                                               {verbose => 1, safe => 1})}),
-        "rmdir $dir_a_res\nunlink $file\nrmdir $dir_b_res\n",
+        $verbose_expected,
         'rmtree safe verbose (new style)'
     );
+    rmtree($dir_a) if -d $dir_a;
+    rmtree($dir_b) if -d $dir_b;
 }
 
 {
@@ -617,6 +642,7 @@ SKIP: {
     my $px = catdir($p, $x);
     ok(mkpath($px), 'create and delete directory 2.07');
     ok(rmtree($px), '.. rmtree fails in File-Path-2.07');
+    chdir updir();
 }
 
 my $windows_dir = 'C:\Path\To\Dir';
