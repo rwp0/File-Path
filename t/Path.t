@@ -486,9 +486,9 @@ $dir_base_res = $dir_base = catdir($tmp_base,'output');
 $dir_a_res    = $dir_a    = catdir($dir_base, 'A');
 $dir_b_res    = $dir_b    = catdir($dir_base, 'B');
 
-$dir_base_res = VMS::Filespec::vmsify($dir_base_res) if $Is_VMS;
-$dir_a_res = VMS::Filespec::vmsify($dir_a_res) if $Is_VMS;
-$dir_b_res = VMS::Filespec::vmsify($dir_b_res) if $Is_VMS;
+$dir_base_res = VMS::Filespec::unixify($dir_base_res) if $Is_VMS;
+$dir_a_res    = VMS::Filespec::unixify($dir_a_res)    if $Is_VMS;
+$dir_b_res    = VMS::Filespec::unixify($dir_b_res)    if $Is_VMS;
 
 is(_run_for_verbose(sub {@created = mkpath($dir_a, 1)}),
     "mkdir $dir_base_res\nmkdir $dir_a_res\n",
