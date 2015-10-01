@@ -1,5 +1,9 @@
 Revision history for Perl extension File::Path.
 
+2.11_004 2015-10-01
+    - Revert change made in 2.10_001 to carp on failure to find root directory
+      when performing an rmtree.
+
 2.11_003 2015-08-03
     - Fix root tests to properly call prereq() -- failed primarily on Windows
       since getpwent/getgrent not implemented on Windows.
