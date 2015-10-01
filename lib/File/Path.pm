@@ -18,7 +18,7 @@ BEGIN {
 
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION   = '2.11_003';
+$VERSION   = '2.11_004';
 $VERSION   = eval $VERSION;
 @ISA       = qw(Exporter);
 @EXPORT    = qw(mkpath rmtree);
@@ -344,8 +344,7 @@ sub _rmtree {
           : $root;
 
         my ( $ldev, $lino, $perm ) = ( lstat $root )[ 0, 1, 2 ]
-          or ( _error( $arg, "Cannot stat directory", $root ) and
-               next ROOT_DIR );
+          or next ROOT_DIR;
 
         if ( -d _ ) {
             $root = VMS::Filespec::vmspath( VMS::Filespec::pathify($root) )
