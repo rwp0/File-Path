@@ -18,7 +18,7 @@ BEGIN {
 
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION   = '2.11_004';
+$VERSION   = '2.12';
 $VERSION   = eval $VERSION;
 @ISA       = qw(Exporter);
 @EXPORT    = qw(mkpath rmtree);
@@ -576,7 +576,7 @@ File::Path - Create or remove directory trees
 
 =head1 VERSION
 
-This document describes version 2.11_003 of File::Path.
+This document describes version 2.12 of File::Path.
 
 =head1 SYNOPSIS
 
@@ -804,9 +804,12 @@ remove_tree().
 
 =item B<NOTE:>
 
-The following error handling mechanism is considered
-experimental and is subject to change pending feedback from
-users.
+The following error handling mechanism is consistent throughout all
+code paths EXCEPT in cases where the ROOT node is nonexistent.  In
+version 2.11 the maintainers attempted to rectify this inconsistency
+but too many downstream modules encountered problems.  In such case,
+if you require root node evaluation or error checking prior to calling
+C<make_path> or C<remove_tree>, you should take additional precautions.
 
 =back
 
