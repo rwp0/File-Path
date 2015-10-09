@@ -1,14 +1,15 @@
 Revision history for Perl extension File::Path.
 
-2.12     2015-10-07
-    - Change ERROR HANDLING doc section to be very clear about the error
-      handling mechanism for root nodes.
-    - Change ERROR HANDLING doc section to remove the EXPERIMENTAL note; the
-      error handling mechanism has been in place for several versions.
+2.12     2015-10-09
+    - RT 105935 Change ERROR HANDLING doc section to be very clear about the
+      error handling mechanism for root nodes.
+    - RT 105935 Change ERROR HANDLING doc section to remove the EXPERIMENTAL
+      note; the error handling mechanism has been in place for several versions.
+
 
 2.11_004 2015-10-01
-    - Revert change made in 2.10_001 to carp on failure to find root directory
-      when performing an rmtree.
+    - RT 105935 Revert change made in 2.10_001 to carp on failure to find root
+      directory when performing an rmtree.
 
 2.11_003 2015-08-03
     - Fix root tests to properly call prereq() -- failed primarily on Windows
