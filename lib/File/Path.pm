@@ -1093,8 +1093,9 @@ F<File::Path> B<rmtree> and B<remove_tree> will not work with multithreaded
 applications due to its use of B<chdir>.  At this time, no warning or error
 results and you will certainly encounter unexpected results.
 
-The implementation that surfaces this limitation may change in a future
-release.
+The implementation that surfaces this limitation will not be changed. See the
+F<File::Path::Tiny> module for functionality similar to F<File::Path> but does
+not B<chdir>.
 
 =head2 NFS Mount Points
 
