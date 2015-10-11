@@ -71,8 +71,8 @@ SKIP: {
                                               { user => $max_user,
                                                 group => $max_group } ) } );
   like( $rv,
-        qr{\Aunable to map $max_user to a uid, ownership not changed: .* at \S+ line \d+
-unable to map $max_group to a gid, group ownership not changed: .* at \S+ line \d+\b},
+        qr{\Aunable to map $max_user to a uid, ownership not changed: .* at \S+ line \d+\.?
+unable to map $max_group to a gid, group ownership not changed: .* at \S+ line \d+\b\.?},
         "created a directory not owned by $max_user:$max_group..."
       );
 }
