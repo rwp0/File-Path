@@ -1,5 +1,9 @@
 Revision history for Perl extension File::Path.
 
+NEXT
+    - RT 94209 document that the thread safety issue will not change and
+      communicate alternative. 
+
 2.12     2015-10-09
     - RT 105935 Change ERROR HANDLING doc section to be very clear about the
       error handling mechanism for root nodes.
