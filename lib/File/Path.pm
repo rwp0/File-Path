@@ -828,7 +828,7 @@ encountered the diagnostic key will be empty.
 An example usage looks like:
 
   remove_tree( 'foo/bar', 'bar/rat', {error => \my $err} );
-  if (@$err) {
+  if ($err && @$err) {
       for my $diag (@$err) {
           my ($file, $message) = %$diag;
           if ($file eq '') {
