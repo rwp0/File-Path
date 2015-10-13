@@ -5,6 +5,8 @@ NEXT
       communicate alternative.
     - RT 85878  be more generous with error check regex given we could be
       dealing with a pre-1.25 Carp.
+    - GH #33    Be more precise in documentation example for make_path
+      error checking.
 
 2.12     2015-10-09
     - RT 105935 Change ERROR HANDLING doc section to be very clear about the

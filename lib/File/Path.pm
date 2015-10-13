@@ -1158,6 +1158,8 @@ Contributors to File::Path, in alphabetical order.
 
 =item Tom Lutz <F<tommylutz@gmail.com>>
 
+=item Will Sheppard <F<willsheppard@github>>
+
 =back
 
 =head1 COPYRIGHT
