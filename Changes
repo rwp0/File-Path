@@ -1,12 +1,14 @@
 Revision history for Perl extension File::Path.
 
-NEXT
+2.12_001 2016-09-18
     - RT 94209  document that the thread safety issue will not change and
       communicate alternative.
     - RT 85878  be more generous with error check regex given we could be
       dealing with a pre-1.25 Carp.
     - GH #33    Be more precise in documentation example for make_path
       error checking.
+    - GH #34 Skip Windows 2000 and earlier unit tests (test change).
+    - GH #36 Do not hardcode ENOENT (test change).
 
 2.12     2015-10-09
     - RT 105935 Change ERROR HANDLING doc section to be very clear about the
