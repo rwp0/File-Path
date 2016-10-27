@@ -882,7 +882,7 @@ to at least 2.08 in order to avoid surprises.
 
 =head3 SECURITY CONSIDERATIONS
 
-There were race conditions 1.x implementations of File::Path's
+There were race conditions in the 1.x implementations of File::Path's
 C<rmtree> function (although sometimes patched depending on the OS
 distribution or platform). The 2.0 version contains code to avoid the
 problem mentioned in CVE-2002-0435.
@@ -1017,9 +1017,9 @@ execution continues, but the directory may possibly not be deleted.
 
 =item cannot remove directory [dir]: [errmsg]
 
-C<remove_tree> attempted to remove a directory, but failed. This may because
+C<remove_tree> attempted to remove a directory, but failed. This may be because
 some objects that were unable to be removed remain in the directory, or
-a permissions issue. The directory will be left behind.
+it could be a permissions issue. The directory will be left behind.
 
 =item cannot restore permissions of [dir] to [0nnn]: [errmsg]
 
@@ -1091,7 +1091,7 @@ The following describes F<File::Path> limitations and how to report bugs.
 
 F<File::Path> B<rmtree> and B<remove_tree> will not work with multithreaded
 applications due to its use of B<chdir>.  At this time, no warning or error
-results and you will certainly encounter unexpected results.
+is given and you will certainly encounter unexpected results.
 
 The implementation that surfaces this limitation will not be changed. See the
 F<File::Path::Tiny> module for functionality similar to F<File::Path> but does
