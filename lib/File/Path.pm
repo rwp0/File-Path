@@ -676,7 +676,7 @@ in an C<eval> block.
 
 If present, will cause any created directory to be owned by C<$owner>.
 If the value is numeric, it will be interpreted as a uid, otherwise
-as username is assumed. An error will be issued if the username cannot be
+a username is assumed. An error will be issued if the username cannot be
 mapped to a uid, or the uid does not exist, or the process lacks the
 privileges to change ownership.
 
@@ -688,7 +688,7 @@ C<user> and C<uid> are aliases of C<owner>.
 
 If present, will cause any created directory to be owned by the group C<$group>.
 If the value is numeric, it will be interpreted as a gid, otherwise
-as group name is assumed. An error will be issued if the group name cannot be
+a group name is assumed. An error will be issued if the group name cannot be
 mapped to a gid, or the gid does not exist, or the process lacks the
 privileges to change group ownership.
 
@@ -997,7 +997,7 @@ halts to avoid a race condition from occurring.
 
 =item cannot stat prior working directory [dir]: [errmsg], aborting. (FATAL)
 
-C<remove_tree> was unable to stat the parent directory after have returned
+C<remove_tree> was unable to stat the parent directory after having returned
 from the child. Since there is no way of knowing if we returned to
 where we think we should be (by comparing device and inode) the only
 way out is to C<croak>.
