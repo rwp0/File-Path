@@ -610,7 +610,7 @@ This document describes version 2.12 of File::Path.
 
 =head1 DESCRIPTION
 
-This module provide a convenient way to create directories of
+This module provides a convenient way to create directories of
 arbitrary depth and to delete an entire directory subtree from the
 filesystem.
 
@@ -623,7 +623,7 @@ The following functions are provided:
 =item make_path( $dir1, $dir2, ...., \%opts )
 
 The C<make_path> function creates the given directories if they don't
-exists before, much like the Unix command C<mkdir -p>.
+exist before, much like the Unix command C<mkdir -p>.
 
 The function accepts a list of directories to be created. Its
 behaviour may be tuned by an optional hashref appearing as the last
@@ -706,7 +706,7 @@ Group ownership of directories that already exist will not be changed.
 
 =item mkpath( $dir1, $dir2,..., \%opt )
 
-The mkpath() function provide the legacy interface of make_path() with
+The mkpath() function provides the legacy interface of make_path() with
 a different interpretation of the arguments passed.  The behaviour and
 return value of the function is otherwise identical to make_path().
 
@@ -725,7 +725,7 @@ removed. Its behaviour may be tuned by an optional hashref
 appearing as the last parameter on the call.  If an empty string is
 passed to C<remove_tree>, an error will occur.
 
-The functions returns the number of files successfully deleted.
+The function returns the number of files successfully deleted.
 
 The following keys are recognised in the option hash:
 
@@ -791,7 +791,7 @@ of hand. This is the safest course of action.
 
 =item rmtree( $dir1, $dir2,..., \%opt )
 
-The rmtree() function provide the legacy interface of remove_tree()
+The rmtree() function provides the legacy interface of remove_tree()
 with a different interpretation of the arguments passed. The behaviour
 and return value of the function is otherwise identical to
 remove_tree().
