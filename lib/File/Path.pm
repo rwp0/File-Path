@@ -610,7 +610,7 @@ This document describes version 2.12 of File::Path.
 
 =head1 DESCRIPTION
 
-This module provide a convenient way to create directories of
+This module provides a convenient way to create directories of
 arbitrary depth and to delete an entire directory subtree from the
 filesystem.
 
@@ -623,7 +623,7 @@ The following functions are provided:
 =item make_path( $dir1, $dir2, ...., \%opts )
 
 The C<make_path> function creates the given directories if they don't
-exists before, much like the Unix command C<mkdir -p>.
+exist before, much like the Unix command C<mkdir -p>.
 
 The function accepts a list of directories to be created. Its
 behaviour may be tuned by an optional hashref appearing as the last
@@ -676,7 +676,7 @@ in an C<eval> block.
 
 If present, will cause any created directory to be owned by C<$owner>.
 If the value is numeric, it will be interpreted as a uid, otherwise
-as username is assumed. An error will be issued if the username cannot be
+a username is assumed. An error will be issued if the username cannot be
 mapped to a uid, or the uid does not exist, or the process lacks the
 privileges to change ownership.
 
@@ -688,7 +688,7 @@ C<user> and C<uid> are aliases of C<owner>.
 
 If present, will cause any created directory to be owned by the group C<$group>.
 If the value is numeric, it will be interpreted as a gid, otherwise
-as group name is assumed. An error will be issued if the group name cannot be
+a group name is assumed. An error will be issued if the group name cannot be
 mapped to a gid, or the gid does not exist, or the process lacks the
 privileges to change group ownership.
 
@@ -706,7 +706,7 @@ Group ownership of directories that already exist will not be changed.
 
 =item mkpath( $dir1, $dir2,..., \%opt )
 
-The mkpath() function provide the legacy interface of make_path() with
+The mkpath() function provides the legacy interface of make_path() with
 a different interpretation of the arguments passed.  The behaviour and
 return value of the function is otherwise identical to make_path().
 
@@ -725,7 +725,7 @@ removed. Its behaviour may be tuned by an optional hashref
 appearing as the last parameter on the call.  If an empty string is
 passed to C<remove_tree>, an error will occur.
 
-The functions returns the number of files successfully deleted.
+The function returns the number of files successfully deleted.
 
 The following keys are recognised in the option hash:
 
@@ -791,7 +791,7 @@ of hand. This is the safest course of action.
 
 =item rmtree( $dir1, $dir2,..., \%opt )
 
-The rmtree() function provide the legacy interface of remove_tree()
+The rmtree() function provides the legacy interface of remove_tree()
 with a different interpretation of the arguments passed. The behaviour
 and return value of the function is otherwise identical to
 remove_tree().
@@ -882,7 +882,7 @@ to at least 2.08 in order to avoid surprises.
 
 =head3 SECURITY CONSIDERATIONS
 
-There were race conditions 1.x implementations of File::Path's
+There were race conditions in the 1.x implementations of File::Path's
 C<rmtree> function (although sometimes patched depending on the OS
 distribution or platform). The 2.0 version contains code to avoid the
 problem mentioned in CVE-2002-0435.
@@ -997,7 +997,7 @@ halts to avoid a race condition from occurring.
 
 =item cannot stat prior working directory [dir]: [errmsg], aborting. (FATAL)
 
-C<remove_tree> was unable to stat the parent directory after have returned
+C<remove_tree> was unable to stat the parent directory after having returned
 from the child. Since there is no way of knowing if we returned to
 where we think we should be (by comparing device and inode) the only
 way out is to C<croak>.
@@ -1017,9 +1017,9 @@ execution continues, but the directory may possibly not be deleted.
 
 =item cannot remove directory [dir]: [errmsg]
 
-C<remove_tree> attempted to remove a directory, but failed. This may because
+C<remove_tree> attempted to remove a directory, but failed. This may be because
 some objects that were unable to be removed remain in the directory, or
-a permissions issue. The directory will be left behind.
+it could be a permissions issue. The directory will be left behind.
 
 =item cannot restore permissions of [dir] to [0nnn]: [errmsg]
 
@@ -1091,7 +1091,7 @@ The following describes F<File::Path> limitations and how to report bugs.
 
 F<File::Path> B<rmtree> and B<remove_tree> will not work with multithreaded
 applications due to its use of B<chdir>.  At this time, no warning or error
-results and you will certainly encounter unexpected results.
+is given and you will certainly encounter unexpected results.
 
 The implementation that surfaces this limitation will not be changed. See the
 F<File::Path::Tiny> module for functionality similar to F<File::Path> but does
