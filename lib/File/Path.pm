@@ -245,7 +245,7 @@ sub rmtree {
         my ( $verbose, $safe );
         ( $paths, $verbose, $safe ) = @_;
         $arg->{verbose} = $verbose;
-        $arg->{safe} = defined $safe ? $safe : 0;
+        $arg->{safe} = defined $safe ? $safe : 1;
 
         if ( defined($paths) and length($paths) ) {
             $paths = [$paths] unless UNIVERSAL::isa( $paths, 'ARRAY' );
@@ -272,6 +272,7 @@ sub rmtree {
             if @bad_args;
         ${ $arg->{error} }  = [] if exists $arg->{error};
         ${ $arg->{result} } = [] if exists $arg->{result};
+        $arg->{safe} = 1 if not defined $arg->{safe};
         $paths = [@_];
     }
 
