@@ -60,8 +60,7 @@ is(scalar(@created), 1, "created a directory owned by $max_user:$max_group...");
 is($dir_uid, $max_uid, "... owned by $max_uid");
 is($dir_gid, $max_gid, "... owned by group $max_gid");
 
-SKIP: {
-  skip('Skip until RT 85878 is fixed', 1);
+{
   # invent a user and group that don't exist
   do { ++$max_user  } while ( getpwnam( $max_user ) );
   do { ++$max_group } while ( getgrnam( $max_group ) );
