@@ -3,7 +3,7 @@
 
 use strict;
 
-use Test::More tests => 127;
+use Test::More tests => 133;
 use Config;
 use Fcntl ':mode';
 use lib 't/';
@@ -729,4 +729,32 @@ is(
     ($k, $v) = %{$third_error->[0]};
     is($k, '', "key of hash is empty string, since 3rd arg was undef");
     is($v, $expect, "value of hash is 2nd arg: $message");
+}
+
+{
+    note('https://rt.cpan.org/Ticket/Display.html?id=117019');
+
+    my $tdir = File::Spec::Functions::tmpdir();
+    my $deepest = catdir($tdir, qw( a b c ));
+    my $next_deepest = catdir($tdir, qw( a b ));
+    my $least_deep = catdir($tdir, qw( a ));
+    my @created;
+    @created = File::Path::make_path($deepest, { mode => 0711 });
+    is(scalar(@created), 3, "Created 3 subdirectories");
+
+    my $x = '';
+    my $opts = { error => \$x };
+    File::Path::remove_tree($deepest, $opts);
+    ok(! -d $deepest, "directory '$deepest' removed, as expected");
+
+    my $warn = '';
+    $SIG{__WARN__} = sub { $warn = shift };
+
+    File::Path::remove_tree($next_deepest, $opts);
+    ok(! $warn, "CPAN 117019: No warning thrown when re-using \$opts");
+    ok(! -d $deepest, "directory '$next_deepest' removed, as expected");
+
+    File::Path::remove_tree($least_deep, $opts);
+    ok(! $warn, "CPAN 117019: No warning thrown when re-using \$opts");
+    ok(! -d $deepest, "directory '$least_deep' removed, as expected");
 }

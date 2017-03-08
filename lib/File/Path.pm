@@ -85,15 +85,15 @@ sub make_path {
 sub mkpath {
     my $old_style = !( @_ and __is_arg( $_[-1] ) );
 
-    my $arg;
+    my $data;
     my $paths;
 
     if ($old_style) {
         my ( $verbose, $mode );
         ( $paths, $verbose, $mode ) = @_;
         $paths = [$paths] unless UNIVERSAL::isa( $paths, 'ARRAY' );
-        $arg->{verbose} = $verbose;
-        $arg->{mode} = defined $mode ? $mode : oct '777';
+        $data->{verbose} = $verbose;
+        $data->{mode} = defined $mode ? $mode : oct '777';
     }
     else {
         my %args_permitted = map { $_ => 1 } ( qw|
@@ -108,50 +108,55 @@ sub mkpath {
             verbose
         | );
         my @bad_args = ();
-        $arg = pop @_;
+        my $arg = pop @_;
         for my $k (sort keys %{$arg}) {
-            push @bad_args, $k unless $args_permitted{$k};
+            if (! $args_permitted{$k}) {
+                push @bad_args, $k;
+            }
+            else {
+                $data->{$k} = $arg->{$k};
+            }
         }
         _carp("Unrecognized option(s) passed to make_path(): @bad_args")
             if @bad_args;
-        $arg->{mode} = delete $arg->{mask} if exists $arg->{mask};
-        $arg->{mode} = oct '777' unless exists $arg->{mode};
-        ${ $arg->{error} } = [] if exists $arg->{error};
-        $arg->{owner} = delete $arg->{user} if exists $arg->{user};
-        $arg->{owner} = delete $arg->{uid}  if exists $arg->{uid};
-        if ( exists $arg->{owner} and $arg->{owner} =~ /\D/ ) {
-            my $uid = ( getpwnam $arg->{owner} )[2];
+        $data->{mode} = delete $data->{mask} if exists $data->{mask};
+        $data->{mode} = oct '777' unless exists $data->{mode};
+        ${ $data->{error} } = [] if exists $data->{error};
+        $data->{owner} = delete $data->{user} if exists $data->{user};
+        $data->{owner} = delete $data->{uid}  if exists $data->{uid};
+        if ( exists $data->{owner} and $data->{owner} =~ /\D/ ) {
+            my $uid = ( getpwnam $data->{owner} )[2];
             if ( defined $uid ) {
-                $arg->{owner} = $uid;
+                $data->{owner} = $uid;
             }
             else {
-                _error( $arg,
-"unable to map $arg->{owner} to a uid, ownership not changed"
+                _error( $data,
+"unable to map $data->{owner} to a uid, ownership not changed"
                 );
-                delete $arg->{owner};
+                delete $data->{owner};
             }
         }
-        if ( exists $arg->{group} and $arg->{group} =~ /\D/ ) {
-            my $gid = ( getgrnam $arg->{group} )[2];
+        if ( exists $data->{group} and $data->{group} =~ /\D/ ) {
+            my $gid = ( getgrnam $data->{group} )[2];
             if ( defined $gid ) {
-                $arg->{group} = $gid;
+                $data->{group} = $gid;
             }
             else {
-                _error( $arg,
-"unable to map $arg->{group} to a gid, group ownership not changed"
+                _error( $data,
+"unable to map $data->{group} to a gid, group ownership not changed"
                 );
-                delete $arg->{group};
+                delete $data->{group};
             }
         }
-        if ( exists $arg->{owner} and not exists $arg->{group} ) {
-            $arg->{group} = -1;    # chown will leave group unchanged
+        if ( exists $data->{owner} and not exists $data->{group} ) {
+            $data->{group} = -1;    # chown will leave group unchanged
         }
-        if ( exists $arg->{group} and not exists $arg->{owner} ) {
-            $arg->{owner} = -1;    # chown will leave owner unchanged
+        if ( exists $data->{group} and not exists $data->{owner} ) {
+            $data->{owner} = -1;    # chown will leave owner unchanged
         }
         $paths = [@_];
     }
-    return _mkpath( $arg, $paths );
+    return _mkpath( $data, $paths );
 }
 
 sub _mkpath {
@@ -238,14 +243,14 @@ sub _is_subdir {
 sub rmtree {
     my $old_style = !( @_ and __is_arg( $_[-1] ) );
 
-    my $arg;
+    my ($arg, $data);
     my $paths;
 
     if ($old_style) {
         my ( $verbose, $safe );
         ( $paths, $verbose, $safe ) = @_;
-        $arg->{verbose} = $verbose;
-        $arg->{safe} = defined $safe ? $safe : 0;
+        $data->{verbose} = $verbose;
+        $data->{safe} = defined $safe ? $safe : 0;
 
         if ( defined($paths) and length($paths) ) {
             $paths = [$paths] unless UNIVERSAL::isa( $paths, 'ARRAY' );
@@ -264,38 +269,43 @@ sub rmtree {
             verbose
         | );
         my @bad_args = ();
-        $arg = pop @_;
+        my $arg = pop @_;
         for my $k (sort keys %{$arg}) {
-            push @bad_args, $k unless $args_permitted{$k};
+            if (! $args_permitted{$k}) {
+                push @bad_args, $k;
+            }
+            else {
+                $data->{$k} = $arg->{$k};
+            }
         }
         _carp("Unrecognized option(s) passed to remove_tree(): @bad_args")
             if @bad_args;
-        ${ $arg->{error} }  = [] if exists $arg->{error};
-        ${ $arg->{result} } = [] if exists $arg->{result};
+        ${ $data->{error} }  = [] if exists $data->{error};
+        ${ $data->{result} } = [] if exists $data->{result};
         $paths = [@_];
     }
 
-    $arg->{prefix} = '';
-    $arg->{depth}  = 0;
+    $data->{prefix} = '';
+    $data->{depth}  = 0;
 
     my @clean_path;
-    $arg->{cwd} = getcwd() or do {
-        _error( $arg, "cannot fetch initial working directory" );
+    $data->{cwd} = getcwd() or do {
+        _error( $data, "cannot fetch initial working directory" );
         return 0;
     };
-    for ( $arg->{cwd} ) { /\A(.*)\Z/s; $_ = $1 }    # untaint
+    for ( $data->{cwd} ) { /\A(.*)\Z/s; $_ = $1 }    # untaint
 
     for my $p (@$paths) {
 
         # need to fixup case and map \ to / on Windows
         my $ortho_root = _IS_MSWIN32 ? _slash_lc($p) : $p;
         my $ortho_cwd =
-          _IS_MSWIN32 ? _slash_lc( $arg->{cwd} ) : $arg->{cwd};
+          _IS_MSWIN32 ? _slash_lc( $data->{cwd} ) : $data->{cwd};
         my $ortho_root_length = length($ortho_root);
         $ortho_root_length-- if _IS_VMS;   # don't compare '.' with ']'
         if ( $ortho_root_length && _is_subdir( $ortho_root, $ortho_cwd ) ) {
             local $! = 0;
-            _error( $arg, "cannot remove path when cwd is $arg->{cwd}", $p );
+            _error( $data, "cannot remove path when cwd is $data->{cwd}", $p );
             next;
         }
 
@@ -312,12 +322,12 @@ sub rmtree {
         push @clean_path, $p;
     }
 
-    @{$arg}{qw(device inode perm)} = ( lstat $arg->{cwd} )[ 0, 1 ] or do {
-        _error( $arg, "cannot stat initial working directory", $arg->{cwd} );
+    @{$data}{qw(device inode perm)} = ( lstat $data->{cwd} )[ 0, 1 ] or do {
+        _error( $data, "cannot stat initial working directory", $data->{cwd} );
         return 0;
     };
 
-    return _rmtree( $arg, \@clean_path );
+    return _rmtree( $data, \@clean_path );
 }
 
 sub _rmtree {
