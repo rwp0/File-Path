@@ -126,7 +126,7 @@ sub mkpath {
             }
             else {
                 _error( $arg,
-"unable to map $arg->{owner} to a uid, ownership not changed"
+                    "unable to map $arg->{owner} to a uid, ownership not changed"
                 );
                 delete $arg->{owner};
             }
@@ -138,7 +138,7 @@ sub mkpath {
             }
             else {
                 _error( $arg,
-"unable to map $arg->{group} to a gid, group ownership not changed"
+                    "unable to map $arg->{group} to a gid, group ownership not changed"
                 );
                 delete $arg->{group};
             }
