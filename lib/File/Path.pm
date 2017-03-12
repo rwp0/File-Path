@@ -134,7 +134,7 @@ sub mkpath {
                         "unable to map $arg->{owner} to a uid, " .
                         "ownership not changed"
                       );
-                delete $data->{owner};
+                delete $arg->{owner};
             }
         }
         if ( exists $data->{group} and $data->{group} =~ /\D/ ) {
@@ -147,7 +147,7 @@ sub mkpath {
                         "unable to map $arg->{group} to a gid, " .
                         "group ownership not changed"
                 );
-                delete $data->{group};
+                delete $arg->{group};
             }
         }
         if ( exists $data->{owner} and not exists $data->{group} ) {
