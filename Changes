@@ -1,5 +1,13 @@
 Revision history for Perl extension File::Path.
 
+2.12_001 2017-03-12
+    - GH#41 RT 117019 Fixed File::Path::remove_tree option hash is auto
+                      populated and cannot be reused
+    - GH#40 Unskip in path root t
+    - GH#39 Remove superfluous assignment to $arg{perm}
+    - GH#38 Minor grammatical doc fixes.
+    - GH#37 Minor grammatical doc fixes.
+
 2.12_001 2016-09-18
     - RT 94209  document that the thread safety issue will not change and
       communicate alternative.
