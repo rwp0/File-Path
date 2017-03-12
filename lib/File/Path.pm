@@ -322,8 +322,8 @@ sub rmtree {
         push @clean_path, $p;
     }
 
-    @{$data}{qw(device inode perm)} = ( lstat $data->{cwd} )[ 0, 1 ] or do {
-        _error( $data, "cannot stat initial working directory", $data->{cwd} );
+    @{$arg}{qw(device inode)} = ( lstat $arg->{cwd} )[ 0, 1 ] or do {
+        _error( $arg, "cannot stat initial working directory", $arg->{cwd} );
         return 0;
     };
 
