@@ -130,9 +130,10 @@ sub mkpath {
                 $data->{owner} = $uid;
             }
             else {
-                _error( $data,
-"unable to map $data->{owner} to a uid, ownership not changed"
-                );
+                _error( $arg,
+                        "unable to map $arg->{owner} to a uid, " .
+                        "ownership not changed"
+                      );
                 delete $data->{owner};
             }
         }
@@ -142,8 +143,9 @@ sub mkpath {
                 $data->{group} = $gid;
             }
             else {
-                _error( $data,
-"unable to map $data->{group} to a gid, group ownership not changed"
+                _error( $arg,
+                        "unable to map $arg->{group} to a gid, " .
+                        "group ownership not changed"
                 );
                 delete $data->{group};
             }
