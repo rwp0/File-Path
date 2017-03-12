@@ -1158,6 +1158,8 @@ Contributors to File::Path, in alphabetical order.
 
 =item <F<bulkdd@cpan.org>>
 
+=item Charlie Gonzalez <F<itcharlie@cpan.org>>
+
 =item Craig A. Berry <F<craigberry@mac.com>>
 
 =item Richard Elberger <F<riche@cpan.org>>
@@ -1175,7 +1177,7 @@ Contributors to File::Path, in alphabetical order.
 =head1 COPYRIGHT
 
 This module is copyright (C) Charles Bailey, Tim Bunce, David Landgren,
-James Keenan, and Richard Elberger 1995-2015. All rights reserved.
+James Keenan and Richard Elberger 1995-2017. All rights reserved.
 
 =head1 LICENSE
 
