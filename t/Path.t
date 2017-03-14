@@ -3,7 +3,7 @@
 
 use strict;
 
-use Test::More tests => 133;
+use Test::More tests => 154;
 use Config;
 use Fcntl ':mode';
 use lib 't/';
@@ -757,4 +757,93 @@ is(
     File::Path::remove_tree($least_deep, $opts);
     ok(! $warn, "CPAN 117019: No warning thrown when re-using \$opts");
     ok(! -d $least_deep, "directory '$least_deep' removed, as expected");
+}
+
+{
+    my $count;
+    $count = remove_tree();
+    is($count, 0,
+        "If not provided with any paths, remove_tree() will return a count of 0 things deleted");
+
+    my $warn;
+    local $SIG{__WARN__} = sub { $warn = shift };
+    $count = rmtree();
+    like($warn, qr/No root path\(s\) specified/s, "Got expected carp");
+    is($count, 0,
+        "If not provided with any paths, remove_tree() will return a count of 0 things deleted");
+    $count = rmtree(undef);
+    like($warn, qr/No root path\(s\) specified/s, "Got expected carp");
+    is($count, 0,
+        "If not provided with any paths, remove_tree() will return a count of 0 things deleted");
+    $count = rmtree('');
+    like($warn, qr/No root path\(s\) specified/s, "Got expected carp");
+    is($count, 0,
+        "If not provided with any paths, remove_tree() will return a count of 0 things deleted");
+
+    $count = make_path();
+    is($count, 0,
+        "If not provided with any paths, make_path() will return a count of 0 things created");
+
+    $count = mkpath();
+    is($count, 0,
+        "If not provided with any paths, make_path() will return a count of 0 things created");
+}
+
+{
+    my $tdir = File::Spec::Functions::tmpdir();
+    my $least_deep = catdir($tdir, qw( d ));
+    my $next_deepest = catdir($least_deep, qw( e ));
+    my $deepest = catdir($next_deepest, qw( f ));
+    my (@created, $error);
+    my $user = join('_' => 'foobar', $$);
+    @created = mkpath($deepest, { mode => 0711, user => $user, error => \$error });
+    TODO: {
+        local $TODO = "Notwithstanding the phony 'user', mkpath will actually create subdirectories; should it?";
+        is(scalar(@created), 0, "No subdirectories created");
+    }
+    is(scalar(@$error), 1, "caught error condition" );
+    my ($file, $message) = each %{$error->[0]};
+    like($message,
+        qr/unable to map $user to a uid, ownership not changed/s,
+        "Got expected error message for phony user",
+    );
+
+    # cleanup
+    my $x;
+    my $opts = { error => \$x };
+    File::Path::remove_tree($least_deep, $opts);
+    ok(! -d $least_deep, "directory '$least_deep' removed, as expected");
+    is(scalar(@{$x}), 0, "no error messages using remove_tree() with \$opts");
+
+}
+
+{
+    my $tdir = File::Spec::Functions::tmpdir();
+    my $least_deep = catdir($tdir, qw( g ));
+    my $next_deepest = catdir($least_deep, qw( h ));
+    my $deepest = catdir($next_deepest, qw( i ));
+    my (@created, $error);
+    my $bad_uid = (2 ** 16) - 1;
+    @created = mkpath($deepest, { mode => 0711, uid => $bad_uid, error => \$error });
+    TODO: {
+        local $TODO = "Notwithstanding the phony 'uid', mkpath will actually create subdirectories; should it?";
+        is(scalar(@created), 0, "No subdirectories created");
+    }
+    is(scalar(@$error), 3,
+        "Caught one error condition for each level of directory whose creation was attempted"
+    );
+    for my $e (@{$error}) {
+        my ($file, $message) = each %{$e};
+        like($message,
+            qr/Cannot change ownership of.*?to 65535:-1: Operation not permitted/s,
+            "Got expected error message for phony uid",
+        );
+    }
+
+    # cleanup
+    my $x;
+    my $opts = { error => \$x };
+    File::Path::remove_tree($least_deep, $opts);
+    ok(! -d $least_deep, "directory '$least_deep' removed, as expected");
+    is(scalar(@{$x}), 0, "no error messages using remove_tree() with \$opts");
 }

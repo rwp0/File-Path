@@ -243,8 +243,7 @@ sub _is_subdir {
 sub rmtree {
     my $old_style = !( @_ and __is_arg( $_[-1] ) );
 
-    my ($arg, $data);
-    my $paths;
+    my ($arg, $data, $paths);
 
     if ($old_style) {
         my ( $verbose, $safe );
