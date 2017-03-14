@@ -752,9 +752,9 @@ is(
 
     File::Path::remove_tree($next_deepest, $opts);
     ok(! $warn, "CPAN 117019: No warning thrown when re-using \$opts");
-    ok(! -d $deepest, "directory '$next_deepest' removed, as expected");
+    ok(! -d $next_deepest, "directory '$next_deepest' removed, as expected");
 
     File::Path::remove_tree($least_deep, $opts);
     ok(! $warn, "CPAN 117019: No warning thrown when re-using \$opts");
-    ok(! -d $deepest, "directory '$least_deep' removed, as expected");
+    ok(! -d $least_deep, "directory '$least_deep' removed, as expected");
 }
