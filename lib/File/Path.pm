@@ -160,7 +160,7 @@ sub mkpath {
 }
 
 sub _mkpath {
-    my $arg   = shift;
+    my $data   = shift;
     my $paths = shift;
 
     my ( @created );
@@ -176,24 +176,24 @@ sub _mkpath {
         next if -d $path;
         my $parent = File::Basename::dirname($path);
         unless ( -d $parent or $path eq $parent ) {
-            push( @created, _mkpath( $arg, [$parent] ) );
+            push( @created, _mkpath( $data, [$parent] ) );
         }
-        print "mkdir $path\n" if $arg->{verbose};
-        if ( mkdir( $path, $arg->{mode} ) ) {
+        print "mkdir $path\n" if $data->{verbose};
+        if ( mkdir( $path, $data->{mode} ) ) {
             push( @created, $path );
-            if ( exists $arg->{owner} ) {
+            if ( exists $data->{owner} ) {
 
-                # NB: $arg->{group} guaranteed to be set during initialisation
-                if ( !chown $arg->{owner}, $arg->{group}, $path ) {
-                    _error( $arg,
-"Cannot change ownership of $path to $arg->{owner}:$arg->{group}"
+                # NB: $data->{group} guaranteed to be set during initialisation
+                if ( !chown $data->{owner}, $data->{group}, $path ) {
+                    _error( $data,
+"Cannot change ownership of $path to $data->{owner}:$data->{group}"
                     );
                 }
             }
-            if ( exists $arg->{chmod} ) {
-                if ( !chmod $arg->{chmod}, $path ) {
-                    _error( $arg,
-                        "Cannot change permissions of $path to $arg->{chmod}" );
+            if ( exists $data->{chmod} ) {
+                if ( !chmod $data->{chmod}, $path ) {
+                    _error( $data,
+                        "Cannot change permissions of $path to $data->{chmod}" );
                 }
             }
         }
@@ -205,8 +205,8 @@ sub _mkpath {
             # allow for another process to have created it meanwhile
             if ( ! -d $path ) {
                 $! = $save_bang;
-                if ( $arg->{error} ) {
-                    push @{ ${ $arg->{error} } }, { $path => $e };
+                if ( $data->{error} ) {
+                    push @{ ${ $data->{error} } }, { $path => $e };
                 }
                 else {
                     _croak("mkdir $path: $e");
@@ -331,7 +331,7 @@ sub rmtree {
 }
 
 sub _rmtree {
-    my $arg   = shift;
+    my $data   = shift;
     my $paths = shift;
 
     my $count  = 0;
@@ -349,8 +349,8 @@ sub _rmtree {
         # opposed to being truly canonical, anchored from the root (/).
 
         my $canon =
-          $arg->{prefix}
-          ? File::Spec->catfile( $arg->{prefix}, $root )
+          $data->{prefix}
+          ? File::Spec->catfile( $data->{prefix}, $root )
           : $root;
 
         my ( $ldev, $lino, $perm ) = ( lstat $root )[ 0, 1, 2 ]
@@ -368,25 +368,25 @@ sub _rmtree {
                 my $nperm = $perm | oct '700';
                 if (
                     !(
-                           $arg->{safe}
+                           $data->{safe}
                         or $nperm == $perm
                         or chmod( $nperm, $root )
                     )
                   )
                 {
-                    _error( $arg,
+                    _error( $data,
                         "cannot make child directory read-write-exec", $canon );
                     next ROOT_DIR;
                 }
                 elsif ( !chdir($root) ) {
-                    _error( $arg, "cannot chdir to child", $canon );
+                    _error( $data, "cannot chdir to child", $canon );
                     next ROOT_DIR;
                 }
             }
 
             my ( $cur_dev, $cur_inode, $perm ) = ( stat $curdir )[ 0, 1, 2 ]
               or do {
-                _error( $arg, "cannot stat current working directory", $canon );
+                _error( $data, "cannot stat current working directory", $canon );
                 next ROOT_DIR;
               };
 
@@ -407,20 +407,20 @@ sub _rmtree {
 
             if (
                 !(
-                       $arg->{safe}
+                       $data->{safe}
                     or $nperm == $perm
                     or chmod( $nperm, $curdir )
                 )
               )
             {
-                _error( $arg, "cannot make directory read+writeable", $canon );
+                _error( $data, "cannot make directory read+writeable", $canon );
                 $nperm = $perm;
             }
 
             my $d;
             $d = gensym() if $] < 5.006;
             if ( !opendir $d, $curdir ) {
-                _error( $arg, "cannot opendir", $canon );
+                _error( $data, "cannot opendir", $canon );
                 @files = ();
             }
             else {
@@ -447,9 +447,9 @@ sub _rmtree {
             if (@files) {
 
                 # remove the contained files before the directory itself
-                my $narg = {%$arg};
+                my $narg = {%$data};
                 @{$narg}{qw(device inode cwd prefix depth)} =
-                  ( $cur_dev, $cur_inode, $updir, $canon, $arg->{depth} + 1 );
+                  ( $cur_dev, $cur_inode, $updir, $canon, $data->{depth} + 1 );
                 $count += _rmtree( $narg, \@files );
             }
 
@@ -457,49 +457,49 @@ sub _rmtree {
             # below fails), while we are still in the directory and may do so
             # without a race via '.'
             if ( $nperm != $perm and not chmod( $perm, $curdir ) ) {
-                _error( $arg, "cannot reset chmod", $canon );
+                _error( $data, "cannot reset chmod", $canon );
             }
 
             # don't leave the client code in an unexpected directory
-            chdir( $arg->{cwd} )
+            chdir( $data->{cwd} )
               or
-              _croak("cannot chdir to $arg->{cwd} from $canon: $!, aborting.");
+              _croak("cannot chdir to $data->{cwd} from $canon: $!, aborting.");
 
             # ensure that a chdir upwards didn't take us somewhere other
             # than we expected (see CVE-2002-0435)
             ( $cur_dev, $cur_inode ) = ( stat $curdir )[ 0, 1 ]
               or _croak(
-                "cannot stat prior working directory $arg->{cwd}: $!, aborting."
+                "cannot stat prior working directory $data->{cwd}: $!, aborting."
               );
 
             if (_NEED_STAT_CHECK) {
-                ( $arg->{device} eq $cur_dev and $arg->{inode} eq $cur_inode )
-                  or _croak(  "previous directory $arg->{cwd} "
+                ( $data->{device} eq $cur_dev and $data->{inode} eq $cur_inode )
+                  or _croak(  "previous directory $data->{cwd} "
                             . "changed before entering $canon, "
                             . "expected dev=$ldev ino=$lino, "
                             . "actual dev=$cur_dev ino=$cur_inode, aborting."
                   );
             }
 
-            if ( $arg->{depth} or !$arg->{keep_root} ) {
-                if ( $arg->{safe}
+            if ( $data->{depth} or !$data->{keep_root} ) {
+                if ( $data->{safe}
                     && ( _IS_VMS
                         ? !&VMS::Filespec::candelete($root)
                         : !-w $root ) )
                 {
-                    print "skipped $root\n" if $arg->{verbose};
+                    print "skipped $root\n" if $data->{verbose};
                     next ROOT_DIR;
                 }
                 if ( _FORCE_WRITABLE and !chmod $perm | oct '700', $root ) {
-                    _error( $arg, "cannot make directory writeable", $canon );
+                    _error( $data, "cannot make directory writeable", $canon );
                 }
-                print "rmdir $root\n" if $arg->{verbose};
+                print "rmdir $root\n" if $data->{verbose};
                 if ( rmdir $root ) {
-                    push @{ ${ $arg->{result} } }, $root if $arg->{result};
+                    push @{ ${ $data->{result} } }, $root if $data->{result};
                     ++$count;
                 }
                 else {
-                    _error( $arg, "cannot remove directory", $canon );
+                    _error( $data, "cannot remove directory", $canon );
                     if (
                         _FORCE_WRITABLE
                         && !chmod( $perm,
@@ -508,7 +508,7 @@ sub _rmtree {
                       )
                     {
                         _error(
-                            $arg,
+                            $data,
                             sprintf( "cannot restore permissions to 0%o",
                                 $perm ),
                             $canon
@@ -525,7 +525,7 @@ sub _rmtree {
               && ( $root !~ m/(?<!\^)[\]>]+/ );    # not already in VMS syntax
 
             if (
-                $arg->{safe}
+                $data->{safe}
                 && (
                     _IS_VMS
                     ? !&VMS::Filespec::candelete($root)
@@ -533,7 +533,7 @@ sub _rmtree {
                 )
               )
             {
-                print "skipped $root\n" if $arg->{verbose};
+                print "skipped $root\n" if $data->{verbose};
                 next ROOT_DIR;
             }
 
@@ -542,19 +542,19 @@ sub _rmtree {
                 and $nperm != $perm
                 and not chmod $nperm, $root )
             {
-                _error( $arg, "cannot make file writeable", $canon );
+                _error( $data, "cannot make file writeable", $canon );
             }
-            print "unlink $canon\n" if $arg->{verbose};
+            print "unlink $canon\n" if $data->{verbose};
 
             # delete all versions under VMS
             for ( ; ; ) {
                 if ( unlink $root ) {
-                    push @{ ${ $arg->{result} } }, $root if $arg->{result};
+                    push @{ ${ $data->{result} } }, $root if $data->{result};
                 }
                 else {
-                    _error( $arg, "cannot unlink file", $canon );
+                    _error( $data, "cannot unlink file", $canon );
                     _FORCE_WRITABLE and chmod( $perm, $root )
-                      or _error( $arg,
+                      or _error( $data,
                         sprintf( "cannot restore permissions to 0%o", $perm ),
                         $canon );
                     last;
