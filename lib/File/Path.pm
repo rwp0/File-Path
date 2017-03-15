@@ -175,6 +175,8 @@ sub _mkpath {
         }
         next if -d $path;
         my $parent = File::Basename::dirname($path);
+        # Coverage note:  It's not clear how we would test the condition:
+        # '-d $parent or $path eq $parent'
         unless ( -d $parent or $path eq $parent ) {
             push( @created, _mkpath( $data, [$parent] ) );
         }
@@ -186,11 +188,14 @@ sub _mkpath {
                 # NB: $data->{group} guaranteed to be set during initialisation
                 if ( !chown $data->{owner}, $data->{group}, $path ) {
                     _error( $data,
-"Cannot change ownership of $path to $data->{owner}:$data->{group}"
+                        "Cannot change ownership of $path to $data->{owner}:$data->{group}"
                     );
                 }
             }
             if ( exists $data->{chmod} ) {
+                # Coverage note:  It's not clear how we would trigger the next
+                # 'if' block.  Failure of 'chmod' might first result in a
+                # system error: "Permission denied".
                 if ( !chmod $data->{chmod}, $path ) {
                     _error( $data,
                         "Cannot change permissions of $path to $data->{chmod}" );
@@ -199,6 +204,14 @@ sub _mkpath {
         }
         else {
             my $save_bang = $!;
+
+            # From 'perldoc perlvar': $EXTENDED_OS_ERROR ($^E) is documented
+            # as:
+            # Error information specific to the current operating system. At the
+            # moment, this differs from "$!" under only VMS, OS/2, and Win32
+            # (and for MacPerl). On all other platforms, $^E is always just the
+            # same as $!.
+
             my ( $e, $e1 ) = ( $save_bang, $^E );
             $e .= "; $e1" if $e ne $e1;
 
@@ -281,6 +294,16 @@ sub rmtree {
             if @bad_args;
         ${ $data->{error} }  = [] if exists $data->{error};
         ${ $data->{result} } = [] if exists $data->{result};
+
+        # Wouldn't it make sense to do some validation on @_ before assigning
+        # to $paths here?
+        # In the $old_style case we guarantee that each path is both defined
+        # and non-empty.  We don't check that here, which means we have to
+        # check it later in the first condition in this line:
+        #     if ( $ortho_root_length && _is_subdir( $ortho_root, $ortho_cwd ) ) {
+        # Granted, that would be a change in behavior for the two
+        # non-old-style interfaces.
+
         $paths = [@_];
     }
 
