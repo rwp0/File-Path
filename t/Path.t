@@ -10,7 +10,6 @@ use lib 't/';
 use FilePathTest;
 use Errno qw(:POSIX);
 use Carp;
-use POSIX ();
 
 BEGIN {
     use_ok('Cwd');
@@ -877,7 +876,7 @@ is(
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| m n o | );
     my (@created, $error);
-    my $name = POSIX::cuserid();
+    my $name = (getpwnam($>))[6];
     @created = mkpath($deepest, { mode => 0711, owner => $name, error => \$error });
     is(scalar(@created), 3, "Provide valid 'owner' argument: 3 subdirectories created");
 
@@ -953,7 +952,7 @@ is(
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| delta epsilon zeta | );
     my (@created, $error);
-    my $name = POSIX::cuserid();
+    my $name = (getpwnam($>))[6];
     my $group_name = (getgrgid($())[0];
     @created = mkpath($deepest, { mode => 0711, owner => $name, group => $group_name, error => \$error });
     is(scalar(@created), 3, "Provide valid 'owner' and 'group' 'group' arguments: 3 subdirectories created");
