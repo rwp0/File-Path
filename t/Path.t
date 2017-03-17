@@ -3,7 +3,7 @@
 
 use strict;
 
-use Test::More qw(no_plan); # tests => 154;
+use Test::More tests => 168;
 use Config;
 use Fcntl ':mode';
 use lib 't/';
