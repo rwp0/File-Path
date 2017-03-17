@@ -9,7 +9,7 @@ use File::Spec::Functions;
 
 my $prereq = prereq();
 plan skip_all  => $prereq if defined $prereq;
-plan tests     => 9;
+plan tests     => 11;
 
 my $pwent = max_u();
 my $grent = max_g();
@@ -80,6 +80,15 @@ is($dir_gid, $max_gid, "... owned by group $max_gid");
     qr{unable to map $max_group to a gid, group ownership not changed:}s,
     "created a directory not owned by $max_user:$max_group...",
   );
+}
+
+{
+    # cleanup
+    my $x;
+    my $opts = { error => \$x };
+    remove_tree($tmp_base, $opts);
+    ok(! -d $tmp_base, "directory '$tmp_base' removed, as expected");
+    is(scalar(@{$x}), 0, "no error messages using remove_tree() with \$opts");
 }
 
 sub max_u {
