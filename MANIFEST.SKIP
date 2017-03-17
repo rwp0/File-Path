@@ -38,5 +38,4 @@ svndiff/
 ^MYMETA.*
 \.gitignore
 \.travis.yml
-\README.md
-
+README.md
