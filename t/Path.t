@@ -840,30 +840,6 @@ is(
 
 {
     my ($least_deep, $next_deepest, $deepest) =
-        create_3_level_subdirs( qw| g h i | );
-    my (@created, $error);
-    my $bad_uid = (2 ** 16) - 1;
-    @created = mkpath($deepest, { mode => 0711, uid => $bad_uid, error => \$error });
-    TODO: {
-        local $TODO = "Notwithstanding the phony 'uid', mkpath will actually create subdirectories; should it?";
-        is(scalar(@created), 0, "No subdirectories created");
-    }
-    is(scalar(@$error), 3,
-        "Caught one error condition for each level of directory whose creation was attempted"
-    );
-    for my $e (@{$error}) {
-        my ($file, $message) = each %{$e};
-        like($message,
-            qr/Cannot change ownership of.*?to 65535:-1: Operation not permitted/s,
-            "Got expected error message for phony uid",
-        );
-    }
-
-    cleanup_3_level_subdirs($least_deep);
-}
-
-{
-    my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| j k l | );
     my (@created, $error);
     @created = mkpath($deepest, { mode => 0711, uid => $>, error => \$error });
@@ -926,59 +902,12 @@ is(
 
 {
     my ($least_deep, $next_deepest, $deepest) =
-        create_3_level_subdirs( qw| alpha beta gamma | );
-    my (@created, $error);
-    my $bad_gid = (2 ** 16) - 1;
-    @created = mkpath($deepest, { mode => 0711, group => $bad_gid, error => \$error });
-    TODO: {
-        local $TODO = "Notwithstanding the phony 'gid' (for 'group'), mkpath will actually create subdirectories; should it?";
-        is(scalar(@created), 0, "No subdirectories created");
-    }
-    is(scalar(@$error), 3,
-        "Caught one error condition for each level of directory whose creation was attempted"
-    );
-    for my $e (@{$error}) {
-        my ($file, $message) = each %{$e};
-        like($message,
-            qr/Cannot change ownership of.*?to -1:65535: Operation not permitted/s,
-            "Got expected error message for phony uid",
-        );
-    }
-
-    cleanup_3_level_subdirs($least_deep);
-}
-
-{
-    my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| delta epsilon zeta | );
     my (@created, $error);
     my $name = (getpwnam($>))[6];
     my $group_name = (getgrgid($())[0];
     @created = mkpath($deepest, { mode => 0711, owner => $name, group => $group_name, error => \$error });
     is(scalar(@created), 3, "Provide valid 'owner' and 'group' 'group' arguments: 3 subdirectories created");
-
-    cleanup_3_level_subdirs($least_deep);
-}
-
-{
-    my ($least_deep, $next_deepest, $deepest) =
-        create_3_level_subdirs( qw| eta theta iota | );
-    my (@created, $error);
-    @created = mkpath($deepest, { chmod => 0500, error => \$error });
-    is(scalar(@created), 1, "Provide chmod 0500 argument:  only 1 directory created; others error out");
-    for my $e (@{$error}) {
-        my ($file, $message) = each %{$e};
-        if ($file eq $next_deepest) {
-            chomp($message);
-            like($message, qr/Permission denied/,
-                "Permission denied for '$next_deepest'");
-        }
-        elsif ($file eq $deepest) {
-            chomp($message);
-            like($message, qr/No such file or directory/,
-                "No such file or directory for '$deepest'");
-        }
-    }
 
     cleanup_3_level_subdirs($least_deep);
 }
