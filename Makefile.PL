@@ -13,7 +13,6 @@ WriteMakefile(
     NAME          => 'File::Path',
     VERSION_FROM  => 'lib/File/Path.pm',
     ABSTRACT_FROM => 'lib/File/Path.pm',
-    AUTHOR        => 'Richard Elberger',
     INSTALLDIRS   => ($] < 5.011 ? 'perl' : 'site'),
     PREREQ_PM => {
         'Carp'           => 0,
@@ -30,8 +29,8 @@ WriteMakefile(
       'meta-spec' => { version => 2 },
       resources => {
         repository  => {
-          url  => 'https://github.com/rpcme/File-Path.git',
-          web  => 'https://github.com/rpcme/File-Path',
+          url  => 'https://github.com/jkeenan/File-Path.git',
+          web  => 'https://github.com/jkeenan/File-Path',
           type => 'git',
         },
       },
