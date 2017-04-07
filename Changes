@@ -1,5 +1,9 @@
 Revision history for Perl extension File::Path.
 
+2.12_003 2017-04-07
+    - Add tests to improve coverage ratios as measured by Devel::Cover
+    - No functional changes.
+
 2.12_002 2017-03-12
     - GH#41 RT 117019 Fixed File::Path::remove_tree option hash is auto
                       populated and cannot be reused
