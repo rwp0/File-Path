@@ -848,11 +848,15 @@ is(
     cleanup_3_level_subdirs($least_deep);
 }
 
-{
+SKIP: {
+    my $skip_count = 3;
+    skip "getpwuid() and getgrgid() not implemented on Windows", $skip_count
+        if $^O eq 'MSWin32';
+
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| m n o | );
     my (@created, $error);
-    my $name = (getpwnam($>))[6];
+    my $name = getpwuid($>);
     @created = mkpath($deepest, { mode => 0711, owner => $name, error => \$error });
     is(scalar(@created), 3, "Provide valid 'owner' argument: 3 subdirectories created");
 
@@ -889,7 +893,11 @@ is(
     cleanup_3_level_subdirs($least_deep);
 }
 
-{
+SKIP: {
+    my $skip_count = 3;
+    skip "getpwuid() and getgrgid() not implemented on Windows", $skip_count
+        if $^O eq 'MSWin32';
+
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| v w x | );
     my (@created, $error);
@@ -900,11 +908,15 @@ is(
     cleanup_3_level_subdirs($least_deep);
 }
 
-{
+SKIP: {
+    my $skip_count = 3;
+    skip "getpwuid() and getgrgid() not implemented on Windows", $skip_count
+        if $^O eq 'MSWin32';
+
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| delta epsilon zeta | );
     my (@created, $error);
-    my $name = (getpwnam($>))[6];
+    my $name = getpwuid($>);
     my $group_name = (getgrgid($())[0];
     @created = mkpath($deepest, { mode => 0711, owner => $name, group => $group_name, error => \$error });
     is(scalar(@created), 3, "Provide valid 'owner' and 'group' 'group' arguments: 3 subdirectories created");
