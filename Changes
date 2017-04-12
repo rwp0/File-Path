@@ -1,5 +1,9 @@
 Revision history for Perl extension File::Path.
 
+2.12_004 2017-04-12
+    - Certain functions used in tests are not available on Windows;
+      skip them.
+
 2.12_003 2017-04-07
     - Add tests to improve coverage ratios as measured by Devel::Cover
     - No functional changes.
