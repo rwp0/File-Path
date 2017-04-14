@@ -2,7 +2,9 @@ use strict;
 use Test::More;
 use Config;
 use lib 't/';
-use FilePathTest;
+use FilePathTest qw(
+    _run_for_warning
+);
 use File::Path qw(rmtree mkpath make_path remove_tree);
 use File::Spec::Functions;
 

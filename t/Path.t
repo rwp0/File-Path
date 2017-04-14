@@ -7,7 +7,12 @@ use Test::More tests => 168;
 use Config;
 use Fcntl ':mode';
 use lib 't/';
-use FilePathTest;
+use FilePathTest qw(
+    _run_for_warning
+    _run_for_verbose
+    _cannot_delete_safe_mode
+    _verbose_expected
+);
 use Errno qw(:POSIX);
 use Carp;
 

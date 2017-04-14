@@ -6,9 +6,12 @@ use SelectSaver;
 use Cwd;
 use File::Spec::Functions;
 
-our @EXPORT = qw(_run_for_warning _run_for_verbose _basedir
-                 _cannot_delete_safe_mode
-                 _verbose_expected);
+our @EXPORT_OK = qw(
+    _run_for_warning
+    _run_for_verbose
+    _cannot_delete_safe_mode
+    _verbose_expected
+);
 
 sub _basedir {
   return catdir( curdir(),
