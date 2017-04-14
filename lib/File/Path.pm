@@ -107,11 +107,21 @@ sub mkpath {
             user
             verbose
         | );
+        my %not_on_win32_args = map { $_ => 1 } ( qw|
+            group
+            owner
+            uid
+            user
+        | );
         my @bad_args = ();
+        my @win32_implausible_args = ();
         my $arg = pop @_;
         for my $k (sort keys %{$arg}) {
             if (! $args_permitted{$k}) {
                 push @bad_args, $k;
+            }
+            elsif ($not_on_win32_args{$k} and _IS_MSWIN32) {
+                push @win32_implausible_args, $k;
             }
             else {
                 $data->{$k} = $arg->{$k};
@@ -119,40 +129,44 @@ sub mkpath {
         }
         _carp("Unrecognized option(s) passed to make_path(): @bad_args")
             if @bad_args;
+        _carp("Option(s) implausible on Win32 passed to make_path(): @win32_implausible_args")
+            if @win32_implausible_args;
         $data->{mode} = delete $data->{mask} if exists $data->{mask};
         $data->{mode} = oct '777' unless exists $data->{mode};
         ${ $data->{error} } = [] if exists $data->{error};
-        $data->{owner} = delete $data->{user} if exists $data->{user};
-        $data->{owner} = delete $data->{uid}  if exists $data->{uid};
-        if ( exists $data->{owner} and $data->{owner} =~ /\D/ ) {
-            my $uid = ( getpwnam $data->{owner} )[2];
-            if ( defined $uid ) {
-                $data->{owner} = $uid;
+        unless (@win32_implausible_args) {
+            $data->{owner} = delete $data->{user} if exists $data->{user};
+            $data->{owner} = delete $data->{uid}  if exists $data->{uid};
+            if ( exists $data->{owner} and $data->{owner} =~ /\D/ ) {
+                my $uid = ( getpwnam $data->{owner} )[2];
+                if ( defined $uid ) {
+                    $data->{owner} = $uid;
+                }
+                else {
+                    _error( $data,
+                            "unable to map $data->{owner} to a uid, ownership not changed"
+                          );
+                    delete $data->{owner};
+                }
             }
-            else {
-                _error( $data,
-                        "unable to map $data->{owner} to a uid, ownership not changed"
-                      );
-                delete $data->{owner};
+            if ( exists $data->{group} and $data->{group} =~ /\D/ ) {
+                my $gid = ( getgrnam $data->{group} )[2];
+                if ( defined $gid ) {
+                    $data->{group} = $gid;
+                }
+                else {
+                    _error( $data,
+                            "unable to map $data->{group} to a gid, group ownership not changed"
+                    );
+                    delete $data->{group};
+                }
             }
-        }
-        if ( exists $data->{group} and $data->{group} =~ /\D/ ) {
-            my $gid = ( getgrnam $data->{group} )[2];
-            if ( defined $gid ) {
-                $data->{group} = $gid;
+            if ( exists $data->{owner} and not exists $data->{group} ) {
+                $data->{group} = -1;    # chown will leave group unchanged
             }
-            else {
-                _error( $data,
-                        "unable to map $data->{group} to a gid, group ownership not changed"
-                );
-                delete $data->{group};
+            if ( exists $data->{group} and not exists $data->{owner} ) {
+                $data->{owner} = -1;    # chown will leave owner unchanged
             }
-        }
-        if ( exists $data->{owner} and not exists $data->{group} ) {
-            $data->{group} = -1;    # chown will leave group unchanged
-        }
-        if ( exists $data->{group} and not exists $data->{owner} ) {
-            $data->{owner} = -1;    # chown will leave owner unchanged
         }
         $paths = [@_];
     }

@@ -1,7 +1,7 @@
 use strict;
 use Test::More;
 use Config;
-use lib 't/';
+use lib './t';
 use FilePathTest qw(
     _run_for_warning
 );

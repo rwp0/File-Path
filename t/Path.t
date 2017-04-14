@@ -6,12 +6,14 @@ use strict;
 use Test::More tests => 168;
 use Config;
 use Fcntl ':mode';
-use lib 't/';
+use lib './t';
 use FilePathTest qw(
     _run_for_warning
     _run_for_verbose
     _cannot_delete_safe_mode
     _verbose_expected
+    create_3_level_subdirs
+    cleanup_3_level_subdirs
 );
 use Errno qw(:POSIX);
 use Carp;
@@ -20,30 +22,6 @@ BEGIN {
     use_ok('Cwd');
     use_ok('File::Path', qw(rmtree mkpath make_path remove_tree));
     use_ok('File::Spec::Functions');
-}
-
-sub create_3_level_subdirs {
-    my @dirnames = @_;
-    my %seen = map {$_ => 1} @dirnames;
-    croak "Need 3 distinct names for subdirectories"
-        unless scalar(keys %seen) == 3;
-    my $tdir = File::Spec::Functions::tmpdir();
-    my $least_deep      = catdir($tdir, $dirnames[0]);
-    my $next_deepest    = catdir($least_deep, $dirnames[1]);
-    my $deepest         = catdir($next_deepest, $dirnames[2]);
-    return ($least_deep, $next_deepest, $deepest);
-}
-
-sub cleanup_3_level_subdirs {
-    # runs 2 tests
-    my $least_deep = shift;
-    croak "Must provide path of least subdirectory"
-        unless (length($least_deep) and (-d $least_deep));
-    my $x;
-    my $opts = { error => \$x };
-    File::Path::remove_tree($least_deep, $opts);
-    ok(! -d $least_deep, "directory '$least_deep' removed, as expected");
-    is(scalar(@{$x}), 0, "no error messages using remove_tree() with \$opts");
 }
 
 my $Is_VMS = $^O eq 'VMS';
