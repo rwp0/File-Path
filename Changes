@@ -1,5 +1,11 @@
 Revision history for Perl extension File::Path.
 
+2.12_005 2017-04-21
+    - Recommend use of 'safe => 1' in remove_tree() and rmtree().
+    - Warn if mkpath() or make_path() is passed implausible options on
+      Windows.
+    - Corrections to errors in previous release.
+
 2.12_004 2017-04-18
     - Certain functions used in tests are not available on Windows;
       skip them.

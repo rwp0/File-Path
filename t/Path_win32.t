@@ -46,7 +46,7 @@ cmp_ok($removed, '>', 0, "removed $removed entries from $UNC_path");
 
         @created = mkpath($deepest, { mode => 0711, user => $user, error => \$error });
         like($warn,
-            qr/Option\(s\) implausible on Win32 passed to make_path\(\)/,
+            qr/Option\(s\) implausible on Win32 passed to mkpath\(\) or make_path\(\)/,
             'make_path with final hashref warned due to options implausible on Win32'
         );
         TODO: {

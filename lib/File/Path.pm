@@ -18,7 +18,7 @@ BEGIN {
 
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION   = '2.12_004';
+$VERSION   = '2.12_005';
 $VERSION   = eval $VERSION;
 @ISA       = qw(Exporter);
 @EXPORT    = qw(mkpath rmtree);
@@ -127,9 +127,9 @@ sub mkpath {
                 $data->{$k} = $arg->{$k};
             }
         }
-        _carp("Unrecognized option(s) passed to make_path(): @bad_args")
+        _carp("Unrecognized option(s) passed to mkpath() or make_path(): @bad_args")
             if @bad_args;
-        _carp("Option(s) implausible on Win32 passed to make_path(): @win32_implausible_args")
+        _carp("Option(s) implausible on Win32 passed to mkpath() or make_path(): @win32_implausible_args")
             if @win32_implausible_args;
         $data->{mode} = delete $data->{mask} if exists $data->{mask};
         $data->{mode} = oct '777' unless exists $data->{mode};
@@ -626,33 +626,33 @@ This document describes version 2.12 of File::Path.
 
 =head1 SYNOPSIS
 
-  use File::Path qw(make_path remove_tree);
+    use File::Path qw(make_path remove_tree);
 
-  @created = make_path('foo/bar/baz', '/zug/zwang');
-  @created = make_path('foo/bar/baz', '/zug/zwang', {
-      verbose => 1,
-      mode => 0711,
-  });
-  make_path('foo/bar/baz', '/zug/zwang', {
-      chmod => 0777,
-  });
+    @created = make_path('foo/bar/baz', '/zug/zwang');
+    @created = make_path('foo/bar/baz', '/zug/zwang', {
+        verbose => 1,
+        mode => 0711,
+    });
+    make_path('foo/bar/baz', '/zug/zwang', {
+        chmod => 0777,
+    });
 
-  $removed_count = remove_tree('foo/bar/baz', '/zug/zwang');
-  $removed_count = remove_tree('foo/bar/baz', '/zug/zwang', {
-      verbose => 1,
-      error  => \my $err_list,
-  });
+    $removed_count = remove_tree('foo/bar/baz', '/zug/zwang', {
+        verbose => 1,
+        error  => \my $err_list,
+        safe => 1,
+    });
 
-  # legacy (interface promoted before v2.00)
-  @created = mkpath('/foo/bar/baz');
-  @created = mkpath('/foo/bar/baz', 1, 0711);
-  @created = mkpath(['/foo/bar/baz', 'blurfl/quux'], 1, 0711);
-  $removed_count = rmtree('foo/bar/baz', 1, 1);
-  $removed_count = rmtree(['foo/bar/baz', 'blurfl/quux'], 1, 1);
+    # legacy (interface promoted before v2.00)
+    @created = mkpath('/foo/bar/baz');
+    @created = mkpath('/foo/bar/baz', 1, 0711);
+    @created = mkpath(['/foo/bar/baz', 'blurfl/quux'], 1, 0711);
+    $removed_count = rmtree('foo/bar/baz', 1, 1);
+    $removed_count = rmtree(['foo/bar/baz', 'blurfl/quux'], 1, 1);
 
-  # legacy (interface promoted before v2.06)
-  @created = mkpath('foo/bar/baz', '/zug/zwang', { verbose => 1, mode => 0711 });
-  $removed_count = rmtree('foo/bar/baz', '/zug/zwang', { verbose => 1, mode => 0711 });
+    # legacy (interface promoted before v2.06)
+    @created = mkpath('foo/bar/baz', '/zug/zwang', { verbose => 1, mode => 0711 });
+    $removed_count = rmtree('foo/bar/baz', '/zug/zwang', { verbose => 1, mode => 0711 });
 
 =head1 DESCRIPTION
 
@@ -721,7 +721,7 @@ in an C<eval> block.
 =item uid => $owner
 
 If present, will cause any created directory to be owned by C<$owner>.
-If the value is numeric, it will be interpreted as a uid, otherwise as
+If the value is numeric, it will be interpreted as a uid; otherwise a
 username is assumed. An error will be issued if the username cannot be
 mapped to a uid, the uid does not exist or the process lacks the
 privileges to change ownership.
@@ -733,8 +733,8 @@ C<user> and C<uid> are aliases of C<owner>.
 =item group => $group
 
 If present, will cause any created directory to be owned by the group
-C<$group>.  If the value is numeric, it will be interpreted as a gid,
-otherwise as group name is assumed. An error will be issued if the
+C<$group>.  If the value is numeric, it will be interpreted as a gid;
+otherwise a group name is assumed. An error will be issued if the
 group name cannot be mapped to a gid, the gid does not exist or the
 process lacks the privileges to change group ownership.
 
@@ -764,13 +764,24 @@ identical to C<make_path()>.
 The C<remove_tree> function deletes the given directories and any
 files and subdirectories they might contain, much like the Unix
 command C<rm -rf> or the Windows commands C<rmdir /s> and C<rd /s>. The
-only exception to the function similarity is C<remove_tree> accepts
+only exception to the function similarity is that C<remove_tree> accepts
 only directories whereas C<rm -rf> also accepts files.
 
 The function accepts a list of directories to be
 removed. Its behaviour may be tuned by an optional hashref
 appearing as the last parameter on the call.  If an empty string is
 passed to C<remove_tree>, an error will occur.
+
+B<NOTE:>  For security reasons, we strongly advise use of the
+hashref-as-final-argument syntax, specifically with a setting of the C<safe>
+element to a true value.
+
+    remove_tree( $dir1, $dir2, ....,
+        {
+            safe => 1,
+            ...         # other key-value pairs
+        },
+    );
 
 The function returns the number of files successfully deleted.
 
@@ -798,7 +809,7 @@ When set to a true value, will cause all files and subdirectories
 to be removed, except the initially specified directories. This comes
 in handy when cleaning out an application's scratch directory.
 
-  remove_tree( '/tmp', {keep_root => 1} );
+    remove_tree( '/tmp', {keep_root => 1} );
 
 =item result => \$res
 
@@ -807,8 +818,8 @@ This scalar will be made to reference an array, which will
 be used to store all files and directories unlinked
 during the call. If nothing is unlinked, the array will be empty.
 
-  remove_tree( '/tmp', {result => \my $list} );
-  print "unlinked $_\n" for @$list;
+    remove_tree( '/tmp', {result => \my $list} );
+    print "unlinked $_\n" for @$list;
 
 This is a useful alternative to the C<verbose> key.
 
@@ -842,6 +853,17 @@ The C<rmtree()> function provide the legacy interface of
 C<remove_tree()> with a different interpretation of the arguments
 passed. The behaviour and return value of the function is otherwise
 identical to C<remove_tree()>.
+
+B<NOTE:>  For security reasons, we strongly advise use of the
+hashref-as-final-argument syntax, specifically with a setting of the C<safe>
+element to a true value.
+
+    rmtree( $dir1, $dir2, ....,
+        {
+            safe => 1,
+            ...         # other key-value pairs
+        },
+    );
 
 =back
 

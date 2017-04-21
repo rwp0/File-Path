@@ -1,4 +1,4 @@
-This file is the README for File::Path version 2.12_002
+This file is the README for File::Path version 2.12_005
 [![Build Status](https://travis-ci.org/rpcme/File-Path.svg?branch=master)](https://travis-ci.org/rpcme/File-Path)
 [![CPAN version](https://badge.fury.io/pl/File-Path.svg)](http://badge.fury.io/pl/File-Path)
 
@@ -57,12 +57,12 @@ Prior authors and maintainers: Tim Bunce, Charles Bailey, and
 David Landgren <F<david@landgren.net>>.
 
 Current maintainers are Richard Elberger <F<riche@cpan.org>> and
-James (Jim) Keenan <F<jkeenan@cpan.org>>.
+James E Keenan <F<jkeenan@cpan.org>>.
 
 COPYRIGHT
 
 This module is copyright (C) Charles Bailey, Tim Bunce, David Landgren,
-James Keenan, and Richard Elberger 1995-2015. All rights reserved.
+James Keenan, and Richard Elberger 1995-2017. All rights reserved.
 
 LICENSE
 

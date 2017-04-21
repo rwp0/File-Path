@@ -604,7 +604,7 @@ SKIP: {
             );
         } );
         like($warn,
-            qr/Unrecognized option\(s\) passed to make_path\(\):.*?bar.*?foo/,
+            qr/Unrecognized option\(s\) passed to mkpath\(\) or make_path\(\):.*?bar.*?foo/,
             'make_path with final hashref warned due to unrecognized options'
         );
     }
