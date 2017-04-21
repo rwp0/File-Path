@@ -800,7 +800,10 @@ is(
         "If not provided with any paths, make_path() will return a count of 0 things created");
 }
 
-{
+SKIP: {
+    my $skip_count = 5;
+    skip "Windows will not set this error condition", $skip_count
+            if $^O eq 'MSWin32';
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| d e f | );
     my (@created, $error);
@@ -810,20 +813,14 @@ is(
         local $TODO = "Notwithstanding the phony 'user', mkpath will actually create subdirectories; should it?";
         is(scalar(@created), 0, "No subdirectories created");
     }
-    SKIP: {
-        my $skip_count = 2;
-        skip "Windows will not set this error condition", $skip_count
-            if $^O eq 'MSWin32';
-        is(scalar(@$error), 1, "caught error condition" );
-        my ($file, $message) = each %{$error->[0]};
-        like($message,
-            qr/unable to map $user to a uid, ownership not changed/s,
-            "Got expected error message for phony user",
-        );
-    }
+    is(scalar(@$error), 1, "caught error condition" );
+    my ($file, $message) = each %{$error->[0]};
+    like($message,
+        qr/unable to map $user to a uid, ownership not changed/s,
+        "Got expected error message for phony user",
+    );
 
     cleanup_3_level_subdirs($least_deep);
-
 }
 
 {
@@ -851,7 +848,10 @@ SKIP: {
     cleanup_3_level_subdirs($least_deep);
 }
 
-{
+SKIP: {
+    my $skip_count = 5;
+    skip "Windows will not set this error condition", $skip_count
+        if $^O eq 'MSWin32';
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| p q r | );
     my (@created, $error);
@@ -861,17 +861,12 @@ SKIP: {
         local $TODO = "Notwithstanding the phony 'group', mkpath will actually create subdirectories; should it?";
         is(scalar(@created), 0, "No subdirectories created");
     }
-    SKIP: {
-        my $skip_count = 2;
-        skip "Windows will not set this error condition", $skip_count
-            if $^O eq 'MSWin32';
-        is(scalar(@$error), 1, "caught error condition" );
-        my ($file, $message) = each %{$error->[0]};
-        like($message,
-            qr/unable to map $bad_group to a gid, group ownership not changed/s,
-            "Got expected error message for phony user",
-        );
-    }
+    is(scalar(@$error), 1, "caught error condition" );
+    my ($file, $message) = each %{$error->[0]};
+    like($message,
+        qr/unable to map $bad_group to a gid, group ownership not changed/s,
+        "Got expected error message for phony user",
+    );
 
     cleanup_3_level_subdirs($least_deep);
 }
