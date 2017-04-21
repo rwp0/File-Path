@@ -1,6 +1,4 @@
-# NAME[![Build Status](https://travis-ci.org/rpcme/File-Path.svg?branch=master)](https://travis-ci.org/rpcme/File-Path)
-[![CPAN version](https://badge.fury.io/pl/File-Path.svg)](http://badge.fury.io/pl/File-Path)
-
+# NAME
 
 File::Path - Create or remove directory trees
 
