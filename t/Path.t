@@ -741,6 +741,7 @@ is(
 
 {
     note('https://rt.cpan.org/Ticket/Display.html?id=117019');
+    # remove_tree(): Permit re-use of options hash without issuing a warning
 
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| a b c | );
@@ -766,6 +767,7 @@ is(
 }
 
 {
+    # Corner cases with respect to arguments provided to functions
     my $count;
 
     $count = remove_tree();
@@ -803,7 +805,9 @@ is(
 SKIP: {
     my $skip_count = 5;
     skip "Windows will not set this error condition", $skip_count
-            if $^O eq 'MSWin32';
+        if $^O eq 'MSWin32';
+
+    # mkpath() with hashref:  case of phony user
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| d e f | );
     my (@created, $error);
@@ -824,6 +828,7 @@ SKIP: {
 }
 
 {
+    # mkpath() with hashref:  case of valid uid
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| j k l | );
     my (@created, $error);
@@ -838,6 +843,7 @@ SKIP: {
     skip "getpwuid() and getgrgid() not implemented on Windows", $skip_count
         if $^O eq 'MSWin32';
 
+    # mkpath() with hashref:  case of valid owner
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| m n o | );
     my (@created, $error);
@@ -852,6 +858,8 @@ SKIP: {
     my $skip_count = 5;
     skip "Windows will not set this error condition", $skip_count
         if $^O eq 'MSWin32';
+
+    # mkpath() with hashref:  case of phony group
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| p q r | );
     my (@created, $error);
@@ -872,6 +880,7 @@ SKIP: {
 }
 
 {
+    # mkpath() with hashref:  case of valid group
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| s t u | );
     my (@created, $error);
@@ -886,6 +895,7 @@ SKIP: {
     skip "getpwuid() and getgrgid() not implemented on Windows", $skip_count
         if $^O eq 'MSWin32';
 
+    # mkpath() with hashref:  case of valid group
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| v w x | );
     my (@created, $error);
@@ -901,6 +911,7 @@ SKIP: {
     skip "getpwuid() and getgrgid() not implemented on Windows", $skip_count
         if $^O eq 'MSWin32';
 
+    # mkpath() with hashref:  case of valid owner and group
     my ($least_deep, $next_deepest, $deepest) =
         create_3_level_subdirs( qw| delta epsilon zeta | );
     my (@created, $error);
