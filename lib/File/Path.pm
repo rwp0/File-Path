@@ -1222,6 +1222,10 @@ Contributors to File::Path, in alphabetical order.
 
 =item Craig A. Berry <F<craigberry@mac.com>>
 
+=item James E Keenan <F<jkeenan@cpan.org>>
+
+=item John Lightsey <F<jd@cpanel.net>>
+
 =item Richard Elberger <F<riche@cpan.org>>
 
 =item Ryan Yee <F<ryee@cpan.org>>
