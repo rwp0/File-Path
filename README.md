@@ -19,23 +19,16 @@ All prerequisites are found in the Perl 5 core distribution.
 
 ## To build:
 
-    Cwd
-    Exporter
-    File::Basename
-    File::Spec
+    Cwd                         File::Basename
+    Exporter                    File::Spec
 
 ### To test:
 
-    Carp
-    Config
-    Cwd
-    Errno
+    Carp                        File::Spec::Functions
+    Config                      SelectSaver
+    Cwd                         Test::More
+    Errno                       Win32       # Windows only
     Fcntl
-    File::Spec::Functions
-    SelectSaver
-    Cwd
-    Test::More
-    Win32                   # Windows only
 
 # BUGS
 
@@ -52,10 +45,10 @@ Include test programs or patches as email attachments.
 # AUTHORS
 
 Prior authors and maintainers: Tim Bunce, Charles Bailey, and
-David Landgren <`david@landgren.net`>.
+David Landgren (`david at landgren dot net`).
 
-Current maintainers are Richard Elberger <`riche@cpan.org`> and
-James E Keenan <`jkeenan@cpan.org`>.
+Current maintainers are Richard Elberger (`riche at cpan dot org`) and
+James E Keenan (`jkeenan at cpan dot org`).
 
 # COPYRIGHT
 
