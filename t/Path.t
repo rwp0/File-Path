@@ -596,14 +596,13 @@ SKIP: {
     my $dir2 = catdir( $base, 'B');
 
     {
-        my $warn;
-        $SIG{__WARN__} = sub { $warn = shift };
-
-        my @created = make_path(
-            $dir,
-            $dir2,
-            { mode => 0711, foo => 1, bar => 1 }
-        );
+        my $warn = _run_for_warning( sub {
+            my @created = make_path(
+                $dir,
+                $dir2,
+                { mode => 0711, foo => 1, bar => 1 }
+            );
+        } );
         like($warn,
             qr/Unrecognized option\(s\) passed to make_path\(\):.*?bar.*?foo/,
             'make_path with final hashref warned due to unrecognized options'
@@ -611,14 +610,13 @@ SKIP: {
     }
 
     {
-        my $warn;
-        $SIG{__WARN__} = sub { $warn = shift };
-
-        my @created = remove_tree(
-            $dir,
-            $dir2,
-            { foo => 1, bar => 1 }
-        );
+        my $warn = _run_for_warning( sub {
+            my @created = remove_tree(
+                $dir,
+                $dir2,
+                { foo => 1, bar => 1 }
+            );
+        } );
         like($warn,
             qr/Unrecognized option\(s\) passed to remove_tree\(\):.*?bar.*?foo/,
             'remove_tree with final hashref failed due to unrecognized options'
@@ -754,14 +752,12 @@ is(
     File::Path::remove_tree($deepest, $opts);
     ok(! -d $deepest, "directory '$deepest' removed, as expected");
 
-    my $warn = '';
-    $SIG{__WARN__} = sub { $warn = shift };
-
-    File::Path::remove_tree($next_deepest, $opts);
+    my $warn;
+    $warn = _run_for_warning( sub { File::Path::remove_tree($next_deepest, $opts); } );
     ok(! $warn, "CPAN 117019: No warning thrown when re-using \$opts");
     ok(! -d $next_deepest, "directory '$next_deepest' removed, as expected");
 
-    File::Path::remove_tree($least_deep, $opts);
+    $warn = _run_for_warning( sub { File::Path::remove_tree($least_deep, $opts); } );
     ok(! $warn, "CPAN 117019: No warning thrown when re-using \$opts");
     ok(! -d $least_deep, "directory '$least_deep' removed, as expected");
 }
@@ -779,16 +775,17 @@ is(
         "If not provided with any paths, remove_tree() will return a count of 0 things deleted");
 
     my $warn;
-    local $SIG{__WARN__} = sub { $warn = shift };
-    $count = rmtree();
+    $warn = _run_for_warning( sub { $count = rmtree(); } );
     like($warn, qr/No root path\(s\) specified/s, "Got expected carp");
     is($count, 0,
         "If not provided with any paths, remove_tree() will return a count of 0 things deleted");
-    $count = rmtree(undef);
+
+    $warn = _run_for_warning( sub {$count = rmtree(undef); } );
     like($warn, qr/No root path\(s\) specified/s, "Got expected carp");
     is($count, 0,
         "If provided only with an undefined value, remove_tree() will return a count of 0 things deleted");
-    $count = rmtree('');
+
+    $warn = _run_for_warning( sub {$count = rmtree(''); } );
     like($warn, qr/No root path\(s\) specified/s, "Got expected carp");
     is($count, 0,
         "If provided with an empty string for a path, remove_tree() will return a count of 0 things deleted");

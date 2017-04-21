@@ -19,10 +19,10 @@ our @EXPORT_OK = qw(
 );
 
 sub _basedir {
-  return catdir( curdir(),
-                 sprintf( 'test-%x-%x-%x', time, $$, rand(99999) ),
+  return catdir(
+      curdir(),
+      sprintf( 'test-%x-%x-%x', time, $$, rand(99999) ),
   );
-
 }
 
 sub _run_for_warning {
