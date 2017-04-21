@@ -38,4 +38,6 @@ svndiff/
 ^MYMETA.*
 \.gitignore
 \.travis.yml
-README.md
+^README.md
+^xt/README.pod
+^.version_info.pl
