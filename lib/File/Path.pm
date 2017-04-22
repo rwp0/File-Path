@@ -18,7 +18,7 @@ BEGIN {
 
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION   = '2.12_006';
+$VERSION   = '2.12_007';
 $VERSION   = eval $VERSION;
 @ISA       = qw(Exporter);
 @EXPORT    = qw(mkpath rmtree);
@@ -622,7 +622,7 @@ File::Path - Create or remove directory trees
 
 =head1 VERSION
 
-2.12_006 - released April 21 2017.
+2.12_007 - released April 22 2017.
 
 =head1 SYNOPSIS
 
@@ -1224,7 +1224,7 @@ Contributors to File::Path, in alphabetical order.
 
 =item James E Keenan <F<jkeenan@cpan.org>>
 
-=item John Lightsey <F<jd@cpanel.net>>
+=item John Lightsey <F<john@perlsec.org>>
 
 =item Richard Elberger <F<riche@cpan.org>>
 
