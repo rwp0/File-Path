@@ -18,7 +18,7 @@ notifications:
   email:
     recipients:
       - jkeenan@cpan.org
-    on_success: always
+    on_success: never
     on_failure: always
 matrix:
   allow_failures:
