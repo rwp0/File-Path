@@ -1,7 +1,7 @@
 # NAME
 
 File::Path - Create or remove directory trees
-
+[![Build status](https://ci.appveyor.com/api/projects/status/gxeq4hl1ldw4t3p5?svg=true)](https://ci.appveyor.com/project/jkeenan/file-path)
 [![Build Status](https://travis-ci.org/jkeenan/File-Path.svg?branch=master)](https://travis-ci.org/jkeenan/File-Path)
 [![CPAN version](https://badge.fury.io/pl/File-Path.svg)](http://badge.fury.io/pl/File-Path)
 
