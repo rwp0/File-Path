@@ -30,7 +30,7 @@ my $fchmod_supported = 0;
 if (open my $fh, curdir()) {
     my ($perm) = (stat($fh))[2];
     $perm &= 07777;
-    eval { chmod($fh, $perm); $fchmod_supported = 1; };
+    eval { $fchmod_supported = chmod( $perm, $fh); };
 }
 
 # first check for stupid permissions second for full, so we clean up
