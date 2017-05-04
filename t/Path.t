@@ -742,7 +742,7 @@ is(
 }
 
 {
-    note('https://rt.cpan.org/Ticket/Display.html?id=117019');
+    # https://rt.cpan.org/Ticket/Display.html?id=117019
     # remove_tree(): Permit re-use of options hash without issuing a warning
 
     my ($least_deep, $next_deepest, $deepest) =
