@@ -3,7 +3,7 @@
 
 use strict;
 
-use Test::More tests => 167;
+use Test::More tests => 168;
 use Config;
 use Fcntl ':mode';
 use lib './t';
@@ -468,7 +468,7 @@ SKIP: {
 }
 
 SKIP : {
-    my $skip_count = 18;
+    my $skip_count = 19;
     # this test will fail on Windows, as per:
     #   http://perldoc.perl.org/perlport.html#chmod
 
@@ -483,6 +483,7 @@ SKIP : {
       0433, 0400, 0430, 0403,
       0111, 0100, 0110, 0101,
       0731, 0713, 0317, 0371,
+      0200,
       0173, 0137);
     my $input;
     my $octal_input;
