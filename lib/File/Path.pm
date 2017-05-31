@@ -18,7 +18,7 @@ BEGIN {
 
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION   = '2.12_008';
+$VERSION   = '2.13';
 $VERSION   = eval $VERSION;
 @ISA       = qw(Exporter);
 @EXPORT    = qw(mkpath rmtree);
@@ -633,7 +633,7 @@ File::Path - Create or remove directory trees
 
 =head1 VERSION
 
-2.12_008 - released May 07 2017.
+2.13 - released May 31 2017.
 
 =head1 SYNOPSIS
 
@@ -784,7 +784,7 @@ appearing as the last parameter on the call.  If an empty string is
 passed to C<remove_tree>, an error will occur.
 
 B<NOTE:>  For security reasons, we strongly advise use of the
-hashref-as-final-argument syntax, specifically with a setting of the C<safe>
+hashref-as-final-argument syntax -- specifically, with a setting of the C<safe>
 element to a true value.
 
     remove_tree( $dir1, $dir2, ....,
@@ -969,15 +969,36 @@ problem mentioned in CVE-2002-0435.
 
 See the following pages for more information:
 
-  http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=286905
-  http://www.nntp.perl.org/group/perl.perl5.porters/2005/01/msg97623.html
-  http://www.debian.org/security/2005/dsa-696
+    http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=286905
+    http://www.nntp.perl.org/group/perl.perl5.porters/2005/01/msg97623.html
+    http://www.debian.org/security/2005/dsa-696
 
 Additionally, unless the C<safe> parameter is set (or the
 third parameter in the traditional interface is TRUE), should a
 C<remove_tree> be interrupted, files that were originally in read-only
 mode may now have their permissions set to a read-write (or "delete
 OK") mode.
+
+The following CVE reports were previously filed against File-Path and are
+believed to have been addressed:
+
+=over 4
+
+=item * L<http://cve.circl.lu/cve/CVE-2004-0452>
+
+=item * L<http://cve.circl.lu/cve/CVE-2005-0448>
+
+=back
+
+In February 2017 the cPanel Security Team reported an additional vulnerability
+in File-Path.  The C<chmod()> logic to make directories traversable can be
+abused to set the mode on an attacker-chosen file to an attacker-chosen value.
+This is due to the time-of-check-to-time-of-use (TOCTTOU) race condition
+(L<https://en.wikipedia.org/wiki/Time_of_check_to_time_of_use>) between the
+C<stat()> that decides the inode is a directory and the C<chmod()> that tries
+to make it user-rwx.  CPAN versions 2.13 and later incorporate a patch
+provided by John Lightsey to address this problem.  This vulnerability has
+been reported as CVE-2017-6512.
 
 =head1 DIAGNOSTICS
 

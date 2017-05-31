@@ -1,5 +1,8 @@
 Revision history for Perl extension File::Path.
 
+2.13 2017-05-31
+    - Document security vulnerability reported as CVE-2017-6512.
+
 2.12_008 2017-05-07
     - Patch from John Lightsey.
 
