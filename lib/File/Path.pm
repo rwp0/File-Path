@@ -1244,7 +1244,7 @@ James (Jim) Keenan <F<jkeenan@cpan.org>>.
 
 =head1 CONTRIBUTORS
 
-Contributors to File::Path, in alphabetical order.
+Contributors to File::Path, in alphabetical order by first name.
 
 =over 1
 
@@ -1257,6 +1257,8 @@ Contributors to File::Path, in alphabetical order.
 =item James E Keenan <F<jkeenan@cpan.org>>
 
 =item John Lightsey <F<john@perlsec.org>>
+
+=item Nigel Horne <F<njh@bandsman.co.uk>>
 
 =item Richard Elberger <F<riche@cpan.org>>
 
