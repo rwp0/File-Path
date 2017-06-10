@@ -816,7 +816,7 @@ is(
 }
 
 SKIP: {
-    my $skip_count = 5;
+    my $skip_count = 3;
     skip "Windows will not set this error condition", $skip_count
         if $^O eq 'MSWin32';
 
