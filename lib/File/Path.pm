@@ -377,6 +377,7 @@ sub _rmtree {
     my ( @files, $root );
   ROOT_DIR:
     foreach my $root (@$paths) {
+print STDERR "AAA: root: $root\n";
 
         # since we chdir into each directory, it may not be obvious
         # to figure out where we are if we generate a message about
@@ -395,8 +396,10 @@ sub _rmtree {
         if ( -d _ ) {
             $root = VMS::Filespec::vmspath( VMS::Filespec::pathify($root) )
               if _IS_VMS;
+print STDERR "BBB: we have a directory\n";
 
             if ( !chdir($root) ) {
+print STDERR "CCC: we could not change into directory $root\n";
 
                 # see if we can escalate privileges to get in
                 # (e.g. funny protection mask such as -w- instead of rwx)
@@ -404,6 +407,7 @@ sub _rmtree {
                 # location (CVE-2017-6512)
                 my $root_fh;
                 if (open($root_fh, '<', $root)) {
+print STDERR "DDD: we were able to open $root for reading\n";
                     my ($fh_dev, $fh_inode) = (stat $root_fh )[0,1];
                     $perm &= oct '7777';
                     my $nperm = $perm | oct '700';
@@ -425,7 +429,11 @@ sub _rmtree {
                     }
                     close $root_fh;
                 }
+                else {
+print STDERR "DDD1: we were NOT able to open $root for reading\n";
+                }
                 if ( !chdir($root) ) {
+print STDERR "EEE: (once again) we were NOT able to change into $root\n";
                     _error( $data, "cannot chdir to child", $canon );
                     next ROOT_DIR;
                 }
@@ -611,6 +619,7 @@ sub _rmtree {
             }
         }
     }
+print STDERR "ZZZ: Have examined all roots\n";
     return $count;
 }
 
