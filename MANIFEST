@@ -5,6 +5,7 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml
 README
+t/file-temp-compat.t
 t/FilePathTest.pm
 t/Path-Class.t
 t/Path.t

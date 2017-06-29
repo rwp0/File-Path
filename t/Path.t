@@ -3,7 +3,7 @@
 
 use strict;
 
-use Test::More tests => 198;
+use Test::More tests => 165;
 use Config;
 use Fcntl ':mode';
 use lib './t';
@@ -16,7 +16,6 @@ use FilePathTest qw(
     cleanup_3_level_subdirs
 );
 use Errno qw(:POSIX);
-use Carp;
 
 BEGIN {
     use_ok('Cwd');
@@ -934,45 +933,4 @@ SKIP: {
     is(scalar(@created), 3, "Provide valid 'owner' and 'group' 'group' arguments: 3 subdirectories created");
 
     cleanup_3_level_subdirs($least_deep);
-}
-
-SKIP: {
-    my $skip_count = 32;
-    skip "Testing inter-operability with File::Temp::tempdir()", $skip_count
-        unless ($^O eq 'linux' or $^O eq 'freebsd');
-
-    require File::Temp;
-    require Cwd;
-
-    my $cwd = Cwd::cwd();
-
-    my $tdir = File::Temp::tempdir( CLEANUP => 1 );
-    chdir $tdir or die "Unable to chdir to $tdir: $!";
-
-    my @perms   = map { '0' . $_ . '00' } (0..7);
-    my %p2s     = map { $_ => join('_' => 'foo', $$, $_) } @perms;
-    my @subdirs = sort values(%p2s);
-print STDERR join('|' => @subdirs), "\n";
-    my @created;
-    @created = make_path(@subdirs);
-    is(scalar(@created), 8, "Created 8 subdirectories");
-    for my $subdir (@subdirs) {
-        my $p = File::Spec->catdir($tdir, $subdir);
-        ok(-d $p, "Directory $p exists");
-        my @perms = stat($p);
-        my $mode = sprintf"%04o" => S_IMODE($perms[2]);
-        cmp_ok($mode, 'eq', '0775', "Directory $p starts life as 0775");
-    }
-
-    for my $m (sort keys %p2s) {
-        my $rv = chmod($m, $p2s{$m});
-        is($rv, 1, "chmod $p2s{$m} to $m");
-        my @perms = stat($p2s{$m});
-        my $mode = sprintf "%04o" => S_IMODE($perms[2]);
-        cmp_ok($mode, 'eq', $mode, "Directory $p2s{$m} changed to $m");
-    }
-
-
-    chdir $cwd or die "Unable to chdir to $cwd: $!";
-
 }
