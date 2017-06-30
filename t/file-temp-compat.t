@@ -10,11 +10,15 @@ use Fcntl ':mode';
 
 note("File::Path version: $File::Path::VERSION");
 
+my %ineligible_OSes = map { $_ => 1 } ( qw|
+  VMS MacOS MSWin32 os2 amigaos dos epoc
+|);
+
 my %dupes;
-#SKIP: {
-#    my $skip_count = 41;
-#    skip "Testing inter-operability with File::Temp::tempdir()", $skip_count
-#        unless ($^O eq 'linux' or $^O eq 'freebsd');
+SKIP: {
+    my $skip_count = 41;
+    skip "Testing inter-operability with File::Temp::tempdir()", $skip_count
+        if $ineligible_OSes{$^O};
 
     require File::Temp;
     require Cwd;
@@ -56,5 +60,5 @@ my %dupes;
     }
 
     chdir $cwd or die "Unable to chdir to $cwd: $!";
-    #}
+}
 
