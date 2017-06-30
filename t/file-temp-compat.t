@@ -11,10 +11,10 @@ use Fcntl ':mode';
 note("File::Path version: $File::Path::VERSION");
 
 my %dupes;
-SKIP: {
-    my $skip_count = 41;
-    skip "Testing inter-operability with File::Temp::tempdir()", $skip_count
-        unless ($^O eq 'linux' or $^O eq 'freebsd');
+#SKIP: {
+#    my $skip_count = 41;
+#    skip "Testing inter-operability with File::Temp::tempdir()", $skip_count
+#        unless ($^O eq 'linux' or $^O eq 'freebsd');
 
     require File::Temp;
     require Cwd;
@@ -56,5 +56,5 @@ SKIP: {
     }
 
     chdir $cwd or die "Unable to chdir to $cwd: $!";
-}
+    #}
 
