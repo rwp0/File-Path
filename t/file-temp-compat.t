@@ -29,14 +29,14 @@ SKIP: {
     my @subdirs = sort values(%p2s);
 
     my @created;
-    @created = make_path(@subdirs);
+    @created = make_path(@subdirs, { chmod => 0711 });
     is(scalar(@created), 8, "Created 8 subdirectories");
     for my $subdir (@subdirs) {
         my $p = File::Spec->catdir($tdir, $subdir);
         ok(-d $p, "Directory $p exists");
         my @perms = stat($p);
         my $mode = sprintf "%04o" => S_IMODE($perms[2]);
-        cmp_ok($mode, 'eq', '0775', "Directory $p starts life as 0775");
+        cmp_ok($mode, 'eq', '0711', "Directory $p starts life as 0711");
         my $fname = File::Spec->catfile($p, 'a');
         open my $F, '>', $fname or die "Unable to open $fname for writing: $!";
         print $F "a\n";
