@@ -430,7 +430,21 @@ print STDERR "DDD: but we were able to open $root for reading\n";
                     close $root_fh;
                 }
                 else {
-print STDERR "DDD1: we were NOT able to open $root for reading\n";
+print STDERR "DDD1: we CHEAT to open $root for reading\n";
+                    $perm &= oct '7777';
+                    my $nperm = $perm | oct '700';
+                    if (
+                        !(
+                               $data->{safe}
+                            or $nperm == $perm
+                            or chmod( $nperm, $root )
+                        )
+                      )
+                    {
+                        _error( $data,
+                            "cannot make child directory read-write-exec", $canon );
+                        next ROOT_DIR;
+                    }
                 }
                 if ( !chdir($root) ) {
 print STDERR "EEE: (once again) we were NOT able to change into $root\n";
@@ -574,6 +588,7 @@ print STDERR "EEE: (once again) we were NOT able to change into $root\n";
         }
         else {
             # not a directory
+print STDERR "BBB1: something that is NOT a directory: $root\n";
             $root = VMS::Filespec::vmsify("./$root")
               if _IS_VMS
               && !File::Spec->file_name_is_absolute($root)
