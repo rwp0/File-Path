@@ -377,7 +377,7 @@ sub _rmtree {
     my ( @files, $root );
   ROOT_DIR:
     foreach my $root (@$paths) {
-print STDERR "AAA: root: $root\n";
+#print STDERR "AAA: root: $root\n";
 
         # since we chdir into each directory, it may not be obvious
         # to figure out where we are if we generate a message about
@@ -396,10 +396,10 @@ print STDERR "AAA: root: $root\n";
         if ( -d _ ) {
             $root = VMS::Filespec::vmspath( VMS::Filespec::pathify($root) )
               if _IS_VMS;
-print STDERR "BBB: we have a directory\n";
+#print STDERR "BBB: we have a directory\n";
 
             if ( !chdir($root) ) {
-print STDERR "CCC: we could not change into directory $root\n";
+#print STDERR "CCC: we could not change into directory $root\n";
 
                 # see if we can escalate privileges to get in
                 # (e.g. funny protection mask such as -w- instead of rwx)
@@ -407,7 +407,7 @@ print STDERR "CCC: we could not change into directory $root\n";
                 # location (CVE-2017-6512)
                 my $root_fh;
                 if (open($root_fh, '<', $root)) {
-print STDERR "DDD: but we were able to open $root for reading\n";
+#print STDERR "DDD: but we were able to open $root for reading\n";
                     my ($fh_dev, $fh_inode) = (stat $root_fh )[0,1];
                     $perm &= oct '7777';
                     my $nperm = $perm | oct '700';
@@ -430,7 +430,7 @@ print STDERR "DDD: but we were able to open $root for reading\n";
                     close $root_fh;
                 }
                 else {
-print STDERR "DDD1: we CHEAT to open $root for reading\n";
+#print STDERR "DDD1: we CHEAT to open $root for reading\n";
                     $perm &= oct '7777';
                     my $nperm = $perm | oct '700';
                     if (
@@ -447,7 +447,7 @@ print STDERR "DDD1: we CHEAT to open $root for reading\n";
                     }
                 }
                 if ( !chdir($root) ) {
-print STDERR "EEE: (once again) we were NOT able to change into $root\n";
+#print STDERR "EEE: (once again) we were NOT able to change into $root\n";
                     _error( $data, "cannot chdir to child", $canon );
                     next ROOT_DIR;
                 }
@@ -588,7 +588,7 @@ print STDERR "EEE: (once again) we were NOT able to change into $root\n";
         }
         else {
             # not a directory
-print STDERR "BBB1: something that is NOT a directory: $root\n";
+#print STDERR "BBB1: something that is NOT a directory: $root\n";
             $root = VMS::Filespec::vmsify("./$root")
               if _IS_VMS
               && !File::Spec->file_name_is_absolute($root)
@@ -634,7 +634,6 @@ print STDERR "BBB1: something that is NOT a directory: $root\n";
             }
         }
     }
-#print STDERR "ZZZ: Have examined all roots\n";
     return $count;
 }
 
