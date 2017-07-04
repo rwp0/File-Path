@@ -49,10 +49,10 @@ SKIP: {
     }
 
     for my $m (sort keys %p2s) {
-        my $rv = chmod($m, $p2s{$m});
+        my $rv = chmod(oct($m), $p2s{$m});
         is($rv, 1, "chmod $p2s{$m} to $m");
         my @perms = stat($p2s{$m});
-        my $mode = sprintf "%04s" => S_IMODE($perms[2]);
+        my $mode = sprintf "%04o" => S_IMODE($perms[2]);
         cmp_ok($mode, 'eq', $m, "Directory $p2s{$m} changed to $m");
     }
     while (my ($k,$v) = each %p2s) {
