@@ -18,7 +18,7 @@ BEGIN {
 
 use Exporter ();
 use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION   = '2.14';
+$VERSION   = '2.15';
 $VERSION   = eval $VERSION;
 @ISA       = qw(Exporter);
 @EXPORT    = qw(mkpath rmtree);
@@ -633,7 +633,7 @@ File::Path - Create or remove directory trees
 
 =head1 VERSION
 
-2.14 - released June 07 2016.
+2.15 - released June 07 2017.
 
 =head1 SYNOPSIS
 
