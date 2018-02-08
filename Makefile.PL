@@ -41,9 +41,10 @@ my %WriteMakefileArgs = (
           web  => 'https://github.com/jkeenan/File-Path',
           type => 'git',
         },
+        license => [ 'http://dev.perl.org/licenses/' ],
       },
-      license => 'perl',
     }) : () ),
+    (eval { ExtUtils::MakeMaker->VERSION(6.31) } ? (LICENSE => 'perl_5') : ()),
 );
 if ($^O eq 'MSWin32') {
     $WriteMakefileArgs{TEST_REQUIRES}{'Win32'} = 0;
