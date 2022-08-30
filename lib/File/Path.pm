@@ -639,8 +639,8 @@ File::Path - Create or remove directory trees
 
     use File::Path qw(make_path remove_tree);
 
-    @created = make_path('foo/bar/baz', '/zug/zwang');
-    @created = make_path('foo/bar/baz', '/zug/zwang', {
+    my @created = make_path('foo/bar/baz', '/zug/zwang');
+    my @created = make_path('foo/bar/baz', '/zug/zwang', {
         verbose => 1,
         mode => 0711,
     });
@@ -648,22 +648,22 @@ File::Path - Create or remove directory trees
         chmod => 0777,
     });
 
-    $removed_count = remove_tree('foo/bar/baz', '/zug/zwang', {
+    my $removed_count = remove_tree('foo/bar/baz', '/zug/zwang', {
         verbose => 1,
         error  => \my $err_list,
         safe => 1,
     });
 
     # legacy (interface promoted before v2.00)
-    @created = mkpath('/foo/bar/baz');
-    @created = mkpath('/foo/bar/baz', 1, 0711);
-    @created = mkpath(['/foo/bar/baz', 'blurfl/quux'], 1, 0711);
-    $removed_count = rmtree('foo/bar/baz', 1, 1);
-    $removed_count = rmtree(['foo/bar/baz', 'blurfl/quux'], 1, 1);
+    my @created = mkpath('/foo/bar/baz');
+    my @created = mkpath('/foo/bar/baz', 1, 0711);
+    my @created = mkpath(['/foo/bar/baz', 'blurfl/quux'], 1, 0711);
+    my $removed_count = rmtree('foo/bar/baz', 1, 1);
+    my $removed_count = rmtree(['foo/bar/baz', 'blurfl/quux'], 1, 1);
 
     # legacy (interface promoted before v2.06)
-    @created = mkpath('foo/bar/baz', '/zug/zwang', { verbose => 1, mode => 0711 });
-    $removed_count = rmtree('foo/bar/baz', '/zug/zwang', { verbose => 1, mode => 0711 });
+    my @created = mkpath('foo/bar/baz', '/zug/zwang', { verbose => 1, mode => 0711 });
+    my $removed_count = rmtree('foo/bar/baz', '/zug/zwang', { verbose => 1, mode => 0711 });
 
 =head1 DESCRIPTION
 
