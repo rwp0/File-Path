@@ -1,28 +1,18 @@
 package File::Path;
 
-use 5.005_04;
 use strict;
+use warnings;
 
 use Cwd 'getcwd';
 use File::Basename ();
 use File::Spec     ();
-
-BEGIN {
-    if ( $] < 5.006 ) {
-
-        # can't say 'opendir my $dh, $dirname'
-        # need to initialise $dh
-        eval 'use Symbol';
-    }
-}
-
 use Exporter ();
-use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
-$VERSION   = '2.18';
+
+our $VERSION   = '2.18';
 $VERSION   = eval $VERSION;
-@ISA       = qw(Exporter);
-@EXPORT    = qw(mkpath rmtree);
-@EXPORT_OK = qw(make_path remove_tree);
+our @ISA       = qw(Exporter);
+our @EXPORT    = qw(mkpath rmtree);
+our @EXPORT_OK = qw(make_path remove_tree);
 
 BEGIN {
   for (qw(VMS MacOS MSWin32 os2)) {
@@ -464,9 +454,7 @@ sub _rmtree {
                 $nperm = $perm;
             }
 
-            my $d;
-            $d = gensym() if $] < 5.006;
-            if ( !opendir $d, $curdir ) {
+            if ( !opendir my $d, $curdir ) {
                 _error( $data, "cannot opendir", $canon );
                 @files = ();
             }
